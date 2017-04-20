@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eeeeee"
+    android:orientation="vertical" >
+
+
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="性别" >
+
+        <RadioButton
+            android:id="@+id/state_radio_notsign"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="代签" >
+        </RadioButton>
+
+        <RadioButton
+            android:id="@+id/state_radio_havesign"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已签到" >
+        </RadioButton>
+
+        <RadioButton
+            android:id="@+id/state_radio_leave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="请假" >
+        </RadioButton>
+    </RadioGroup>
+
+</LinearLayout>

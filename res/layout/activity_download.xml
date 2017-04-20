@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="10dip"
+    android:orientation="vertical" >
+    
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="500px"
+	    android:background="#eeeeee"
+	     android:gravity="center">
+	    <TextView 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="插件加载中。。"
+	        android:layout_gravity="center"/>
+	</LinearLayout>
+
+    
+    <Button 
+        android:id="@+id/btn_down"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="立刻下载"
+        android:textSize="18sp"
+        android:onClick="onClick"
+        />
+
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:padding="10dp"
+        android:max="100"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/button_pause"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onClick"
+            android:text="暂停/继续" />
+
+        <Button
+            android:id="@+id/button_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onClick"
+            android:text="取消" />
+
+    </LinearLayout>
+    
+    
+    <TextView 
+        android:id="@+id/text_desc"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:padding="6dp"
+        style="?android:textAppearanceSmall"
+        />
+    
+    <Button 
+        android:id="@+id/btn_open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="打开文件"
+        android:layout_gravity="center_horizontal"
+        android:padding="6dp"
+        android:visibility="gone"
+        />
+    
+</LinearLayout>

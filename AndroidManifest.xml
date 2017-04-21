@@ -75,7 +75,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="user" >
         </activity>
-        <service android:name="csust.teacher.download.DownloadService"></service>
+        <service android:name="csust.teacher.download.DownloadService1"></service>
     </application>
 
 </manifest>

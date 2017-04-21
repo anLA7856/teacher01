@@ -21,7 +21,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import csust.teacher.download.DownloadService;
+import csust.teacher.download.DownloadService1;
 
 public class DownloadActivity extends Activity {
 
@@ -86,8 +86,8 @@ public class DownloadActivity extends Activity {
 		textView = (TextView) findViewById(R.id.text_desc);
 		btnOpen = (Button) findViewById(R.id.btn_open);
 
-		if (DownloadService.getInstance() != null) {
-			progBar.setProgress(DownloadService.getInstance().getProgress());
+		if (DownloadService1.getInstance() != null) {
+			progBar.setProgress(DownloadService1.getInstance().getProgress());
 		}
 
 		receiver = new MyReceiver();
@@ -130,12 +130,12 @@ public class DownloadActivity extends Activity {
 	}
 
 	void startDownloadService() {
-		if (DownloadService.getInstance() != null
-				&& DownloadService.getInstance().getFlag() != DownloadService.Flag_Init) {
+		if (DownloadService1.getInstance() != null
+				&& DownloadService1.getInstance().getFlag() != DownloadService1.Flag_Init) {
 			Toast.makeText(this, "已经在下载", 0).show();
 			return;
 		}
-		Intent it = new Intent(this, DownloadService.class);
+		Intent it = new Intent(this, DownloadService1.class);
 		it.putExtra("flag", "start");
 		it.putExtra("url", url);
 		startService(it);
@@ -143,24 +143,24 @@ public class DownloadActivity extends Activity {
 
 	void pauseDownloadService() {
 		String flag = null;
-		int f = DownloadService.getInstance().getFlag();
-		if (DownloadService.getInstance() != null) {
+		int f = DownloadService1.getInstance().getFlag();
+		if (DownloadService1.getInstance() != null) {
 			// 如果当前已经暂停，则恢复
-			if (f == DownloadService.Flag_Pause) {
+			if (f == DownloadService1.Flag_Pause) {
 				flag = "resume";
-			} else if (f == DownloadService.Flag_Down) {
+			} else if (f == DownloadService1.Flag_Down) {
 				flag = "pause";
 			} else {
 				return;
 			}
 		}
-		Intent it = new Intent(this, DownloadService.class);
+		Intent it = new Intent(this, DownloadService1.class);
 		it.putExtra("flag", flag);
 		startService(it);
 	}
 
 	void stopDownloadService() {
-		Intent it = new Intent(this, DownloadService.class);
+		Intent it = new Intent(this, DownloadService1.class);
 		it.putExtra("flag", "stop");
 		startService(it);
 		progBar.setProgress(0);
@@ -216,9 +216,9 @@ public class DownloadActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
-		final int f = DownloadService.getInstance().getFlag();
+		final int f = DownloadService1.getInstance().getFlag();
 		// XXX:暂停状态下退出？？？
-		if (f == DownloadService.Flag_Down || f == DownloadService.Flag_Pause) {
+		if (f == DownloadService1.Flag_Down || f == DownloadService1.Flag_Pause) {
 			new AlertDialog.Builder(this)
 					.setTitle("确定退出程序？")
 					.setMessage("你有未完成的下载任务")
@@ -239,10 +239,10 @@ public class DownloadActivity extends Activity {
 								public void onClick(DialogInterface dialog,
 										int which) {
 
-									if (f == DownloadService.Flag_Pause) {
+									if (f == DownloadService1.Flag_Pause) {
 										Intent it = new Intent(
 												DownloadActivity.this,
-												DownloadService.class);
+												DownloadService1.class);
 										it.putExtra("flag", "resume");
 										startService(it);
 									}
@@ -253,8 +253,8 @@ public class DownloadActivity extends Activity {
 			return;
 		}
 
-		if (DownloadService.getInstance() != null)
-			DownloadService.getInstance().stopSelf();
+		if (DownloadService1.getInstance() != null)
+			DownloadService1.getInstance().stopSelf();
 		super.onBackPressed();
 	}
 

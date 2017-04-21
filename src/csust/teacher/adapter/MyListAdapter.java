@@ -1,26 +1,12 @@
 package csust.teacher.adapter;
 
-import java.io.File;
 import java.util.List;
 
-
-
-
-
-
-
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -29,10 +15,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import csust.teacher.activity.CourseDetailActivity;
-import csust.teacher.activity.DownloadActivity;
+
+import com.lidroid.xutils.exception.DbException;
+
 import csust.teacher.activity.R;
-import csust.teacher.download.MyFileDownLoader;
+import csust.teacher.download.DownloadManager;
+import csust.teacher.download.DownloadRequestCallBack;
+import csust.teacher.download.DownloadService;
 import csust.teacher.info.CourseInfo;
 import csust.teacher.model.Model;
 import csust.teacher.net.ThreadPoolUtils;
@@ -46,9 +35,8 @@ import csust.teacher.utils.LoadImg.ImageDownloadCallBack;
  *
  */
 public class MyListAdapter extends BaseAdapter{
-	public static final String ACTION_DOWNLOAD_PROGRESS = "my_download_progress";
-	public static final String ACTION_DOWNLOAD_SUCCESS = "my_download_success";
-	public static final String ACTION_DOWNLOAD_FAIL = "my_download_fail";
+
+	private DownloadManager downloadManager ;
 	
 	private List<CourseInfo> list;
 	private Context ctx;
@@ -70,7 +58,9 @@ public class MyListAdapter extends BaseAdapter{
 		this.ctx = ctx;
 		//加载图像
 		loadImgHeadImg = new LoadImg(ctx);
+		
 		this.mNotificationManager = mNotificationManager;
+		downloadManager = DownloadService.getDownloadManager(ctx);
 	}
 	public MyListAdapter(Context ctx, List<CourseInfo> list) {
 		mProDialog = new ProgressDialog(ctx);
@@ -80,6 +70,7 @@ public class MyListAdapter extends BaseAdapter{
 		//加载图像
 		loadImgHeadImg = new LoadImg(ctx);
 		this.mNotificationManager = mNotificationManager;
+		downloadManager = DownloadService.getDownloadManager(ctx);
 	}
 
 	@Override
@@ -139,7 +130,8 @@ public class MyListAdapter extends BaseAdapter{
 			@Override
 			public void onClick(View v) {
 				//首先用于生成excel表格，生成好后，既可以下载。
-				String myUrl = Model.GETSIGNEDREPORT + "course_id="+list.get(position).getCourseName();
+				String myUrl = Model.GETSIGNEDREPORT + "course_id="+list.get(position).getCourseName()
+						+"&courseName="+list.get(position).getCourseName();
 				ThreadPoolUtils.execute(new HttpGetThread(hand, myUrl));
 				
 				mProDialog.setTitle("正在生成签到数据报表，请勿取消！");
@@ -203,7 +195,9 @@ public class MyListAdapter extends BaseAdapter{
 				}else{
 					Toast.makeText(MyListAdapter.this.ctx, "生成数据报表文件成功！", 1).show();
 					//进入下载页面，直接进行下载，利用notification
-					beginDownload(Model.USERREPORTURL+result);
+					//修改后，不必进入下载页面，直接给个notification，然后后台下载，从另一个入口查看下载消息。
+					String fileName = Model.MYUSERINFO.getTeacher_name()+"-"+Model.MYUSERINFO.getTeacher_username()+"-"+result.split(",")[1];
+					beginDownload(Model.USERREPORTURL+result.split(",")[0],fileName);
 					
 				}
 				
@@ -216,18 +210,24 @@ public class MyListAdapter extends BaseAdapter{
 	
 	/**
 	 * 用于开始下载数据
-	 * 
+	 * 在后台下载
 	 * @param url
 	 */
-	private void beginDownload(String url){
+	private void beginDownload(String url,String fileName){
 		
-		Intent intent = new Intent(ctx, DownloadActivity.class);
-		Bundle bund = new Bundle();
-		bund.putSerializable("url", url);
-		// intent.putExtra("value", bund);
-		intent.putExtras(bund);
-		ctx.startActivity(intent);
-		
+//		Intent intent = new Intent(ctx, DownloadActivity.class);
+//		Bundle bund = new Bundle();
+//		bund.putSerializable("url", url);
+//		// intent.putExtra("value", bund);
+//		intent.putExtras(bund);
+//		ctx.startActivity(intent);
+		String target = Model.REPORTDATALOCATION;
+		 try {
+			 //直接在后台下载。
+	            downloadManager.addNewDownload(url,fileName,target,true,true,new DownloadRequestCallBack());
+	     } catch (DbException e) {
+	            e.printStackTrace();
+	     }
 		
 //		MyFileDownLoader myDownloader = new MyFileDownLoader(ctx, mNotificationManager, url);
 //		myDownloader.startDownloadService();

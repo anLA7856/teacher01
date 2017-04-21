@@ -7,10 +7,14 @@ import csust.teacher.info.UserInfo;
 
 public class Model {
 
-	//public static String HTTPURL = "http://534429149.haoqie.net/qiubai/";
-	public static String HTTPURL = "http://10.129.92.21:8989/Sign1.1/";
-//	public static String HTTPURL = "http://115.29.50.213:8989/Sign1.1/";
-	public static String LOCALSTORAGE = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath()+"/sign/";
+
+	//public static String BASEHTTPURL = "http://115.29.50.213:8989";
+	public static String BASEHTTPURL = "http://10.129.92.21:8989";
+	public static String HTTPURL = BASEHTTPURL+"/Sign1.1/";
+
+	public static String BASELOCATION = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
+	public static String LOCALSTORAGE = BASELOCATION+"/sign/";
+	public static String REPORTDATALOCATION = LOCALSTORAGE+"/report/";
 	public static String UPLOADPIC = "teaUploadPic";
 	public static String UPLOADNEWCOURSE = "uploadNewCourse";
 	public static String TEADELETECOURSE = "teaDeleteCourse?";
@@ -36,11 +40,9 @@ public class Model {
 	public static String LOGIN = "teaLogin";
 
 	//用于加载图片的。
-	public static String USERHEADURL = "http://115.29.50.213:8989/Sign1.1/teaPic/";
-//	public static String USERHEADURL = "http://192.168.191.1:8989/Sign1.1/teaPic/";
+	public static String USERHEADURL = BASEHTTPURL+"/Sign1.1/teaPic/";
 
-	public static String USERREPORTURL = "http://115.29.50.213:8989/Sign1.1/xls/";
-//	public static String USERREPORTURL = "http://192.168.191.1:8989/Sign1.1/xls/";
+	public static String USERREPORTURL = BASEHTTPURL+"/Sign1.1/xls/";
 
 	
 

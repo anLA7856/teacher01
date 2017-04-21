@@ -56,8 +56,8 @@ public class MyFileDownLoader {
 
 
 	private void init() {
-		if (DownloadService.getInstance() != null) {
-			mBuilder.setProgress(100, DownloadService.getInstance().getProgress(), false);
+		if (DownloadService1.getInstance() != null) {
+			mBuilder.setProgress(100, DownloadService1.getInstance().getProgress(), false);
 		}
 
 		receiver = new MyReceiver();
@@ -162,13 +162,13 @@ public class MyFileDownLoader {
 		showBeginDownload();
 		
 
-		if (DownloadService.getInstance() != null
-				&& DownloadService.getInstance().getFlag() != DownloadService.Flag_Init) {
+		if (DownloadService1.getInstance() != null
+				&& DownloadService1.getInstance().getFlag() != DownloadService1.Flag_Init) {
 
 			Toast.makeText(ctx, "已经在下载", 0).show();
 			return;
 		}
-		Intent it = new Intent(ctx, DownloadService.class);
+		Intent it = new Intent(ctx, DownloadService1.class);
 		it.putExtra("flag", "start");
 		it.putExtra("url", downloadUrl);
 		ctx.startService(it);

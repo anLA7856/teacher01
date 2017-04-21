@@ -1,178 +1,87 @@
 package csust.teacher.download;
 
-import java.io.File;
-
-import csust.teacher.activity.DownloadActivity;
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+
+import java.util.List;
+
+/**
+ * Author: wyouflf
+ * Date: 13-11-10
+ * Time: 上午1:04
+ */
 public class DownloadService extends Service {
-	public static final int Flag_Init = 0; // 初始状态
-	public static final int Flag_Down = 1; // 下载状态
-	public static final int Flag_Pause = 2; // 暂停状态
-	public static final int Flag_Done = 3; // 完成状态
 
-	String url;
+    private static DownloadManager DOWNLOAD_MANAGER;
 
-	// 下载进度
-	private int progress = 0;
+    public static DownloadManager getDownloadManager(Context appContext) {
+        if (!DownloadService.isServiceRunning(appContext)) {
+//            Intent downloadSvr = new Intent("download.service.action");
+            Intent downloadSvr = new Intent(appContext,DownloadService.class);
+            appContext.startService(downloadSvr);
+        }
+        if (DownloadService.DOWNLOAD_MANAGER == null) {
+            DownloadService.DOWNLOAD_MANAGER = new DownloadManager(appContext);
+        }
+        return DOWNLOAD_MANAGER;
+    }
 
-	public int getProgress() {
-		return progress;
-	}
+    public DownloadService() {
+        super();
+    }
 
-	// 下载状态标志
-	private int flag;
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
-	public int getFlag() {
-		return flag;
-	}
+    @Override
+    public void onCreate() {
+        super.onCreate();
+    }
 
-	DownThread mThread;
-	Downloader downloader;
+    @Override
+    public void onStart(Intent intent, int startId) {
+        super.onStart(intent, startId);
+    }
 
-	private static DownloadService instance;
+    @Override
+    public void onDestroy() {
+        if (DOWNLOAD_MANAGER != null) {
+            try {
+                DOWNLOAD_MANAGER.stopAllDownload();
+                DOWNLOAD_MANAGER.backupDownloadInfoList();
+            } catch (DbException e) {
+                LogUtils.e(e.getMessage(), e);
+            }
+        }
+        super.onDestroy();
+    }
 
-	public static DownloadService getInstance() {
-		return instance;
-//		return new DownloadService();
-	}
+    public static boolean isServiceRunning(Context context) {
+        boolean isRunning = false;
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return null;
-	}
+        ActivityManager activityManager =
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> serviceList
+                = activityManager.getRunningServices(Integer.MAX_VALUE);
 
-	@Override
-	public void onCreate() {
-		Log.i("jlf", "service.........onCreate");
-		instance = this;
-		flag = Flag_Init;
-		super.onCreate();
-	}
+        if (serviceList == null || serviceList.size() == 0) {
+            return false;
+        }
 
-	@Override
-	public void onStart(Intent intent, int startId) {
-		
-	}
-
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		String msg = intent.getExtras().getString("flag");
-		url = intent.getExtras().getString("url");
-		if (mThread == null) {
-			mThread = new DownThread();
-		}
-		if (downloader == null) {
-			downloader = new Downloader(this, url, url.substring(38, url.length()));
-		}
-		downloader.setDownloadListener(downListener);
-
-		if (msg.equals("start")) {
-			startDownload();
-		} else if (msg.equals("pause")) {
-			downloader.pause();
-		} else if (msg.equals("resume")) {
-			downloader.resume();
-		} else if (msg.equals("stop")) {
-			downloader.cancel();
-			stopSelf();
-		}
-
-		return super.onStartCommand(intent, flags, startId);
-	}
-
-	private void startDownload() {
-		if (flag == Flag_Init || flag == Flag_Pause) {
-			if (mThread != null && !mThread.isAlive()) {
-				mThread = new DownThread();
-			}
-			mThread.start();
-		}
-	}
-
-	@Override
-	public void onDestroy() {
-		Log.e("jlf", "service...........onDestroy");
-		try {
-			flag = 0;
-			mThread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		mThread = null;
-		super.onDestroy();
-	}
-
-	class DownThread extends Thread {
-
-		@Override
-		public void run() {
-
-			if (flag == Flag_Init || flag == Flag_Done) {
-				flag = Flag_Down;
-			}
-
-			downloader.start();
-		}
-	}
-
-	private DownloadListener downListener = new DownloadListener() {
-
-		int fileSize;
-		Intent intent = new Intent();
-
-		@Override
-		public void onSuccess(File file) {
-			intent.setAction(DownloadActivity.ACTION_DOWNLOAD_SUCCESS);
-			intent.putExtra("progress", 100);
-			intent.putExtra("file", file);
-			sendBroadcast(intent);
-		}
-
-		@Override
-		public void onStart(int fileByteSize) {
-			fileSize = fileByteSize;
-			flag = Flag_Down;
-		}
-
-		@Override
-		public void onResume() {
-			flag = Flag_Down;
-		}
-
-		@Override
-		public void onProgress(int receivedBytes) {
-			if (flag == Flag_Down) {
-				progress = (int) ((receivedBytes / (float) fileSize) * 100);
-				intent.setAction(DownloadActivity.ACTION_DOWNLOAD_PROGRESS);
-				intent.putExtra("progress", progress);
-				sendBroadcast(intent);
-
-				if (progress == 100) {
-					flag = Flag_Done;
-				}
-			}
-		}
-
-		@Override
-		public void onPause() {
-			flag = Flag_Pause;
-		}
-
-		@Override
-		public void onFail() {
-			intent.setAction(DownloadActivity.ACTION_DOWNLOAD_FAIL);
-			sendBroadcast(intent);
-			flag = Flag_Init;
-		}
-
-		@Override
-		public void onCancel() {
-			progress = 0;
-			flag = Flag_Init;
-		}
-	};
+        for (int i = 0; i < serviceList.size(); i++) {
+            if (serviceList.get(i).service.getClassName().equals(DownloadService.class.getName())) {
+                isRunning = true;
+                break;
+            }
+        }
+        return isRunning;
+    }
 }

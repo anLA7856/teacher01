@@ -4,21 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-
-import csust.teacher.fragment.ReleaseSignFragment;
-import csust.teacher.fragment.CourseFragment;
-import csust.teacher.fragment.ReleaseSignFragment.BeginSignFragmentCallBack;
-import csust.teacher.fragment.CourseFragment.CourseFragmentCallBack;
-import csust.teacher.info.UserInfo;
-import csust.teacher.model.Model;
-import csust.teacher.utils.MyJson;
-import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.sip.SipRegistrationListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -34,6 +22,19 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+
+import csust.teacher.fragment.CourseFragment;
+import csust.teacher.fragment.CourseFragment.CourseFragmentCallBack;
+import csust.teacher.fragment.DownloadFragment;
+import csust.teacher.fragment.DownloadFragment.DownloadFragmentCallBack;
+import csust.teacher.fragment.ReleaseSignFragment;
+import csust.teacher.fragment.ReleaseSignFragment.BeginSignFragmentCallBack;
+import csust.teacher.info.UserInfo;
+import csust.teacher.model.Model;
+import csust.teacher.utils.MyJson;
 
 /**
  * 主界面的mainactivity，包括使用第三方组件slidingfragmentactivity
@@ -53,6 +54,8 @@ public class MainActivity extends SlidingFragmentActivity implements
 	private ReleaseSignFragment mBeginSignFragment;
 	// 课程管理的碎片
 	private CourseFragment mCourseFragment;
+	//正在下载的碎片
+	private DownloadFragment mDownloadFragment;
 	// 定义fragment管理器：
 	private FragmentManager mFragmentManager;
 	// 获取fragment栈
@@ -63,7 +66,7 @@ public class MainActivity extends SlidingFragmentActivity implements
 	private TextView myUserName;
 	private ImageView mSettingBtn; // 设置按钮
 	// leftview中下面的按钮
-	private RelativeLayout mLeftSign, mLeftCourse;
+	private RelativeLayout mLeftSign, mLeftCourse,mLeftDownload;
 	private int fragmentFlag = 0;
 	//json解析类
 	private MyJson myjson = new MyJson();
@@ -173,6 +176,7 @@ public class MainActivity extends SlidingFragmentActivity implements
 		mSettingBtn = (ImageView) mLeftView.findViewById(R.id.SettingBtn);
 		mLeftCourse = (RelativeLayout) mLeftView.findViewById(R.id.LeftCourse);
 		mLeftSign = (RelativeLayout) mLeftView.findViewById(R.id.LeftSign);
+		mLeftDownload = (RelativeLayout) mLeftView.findViewById(R.id.LeftDownload);
 		myUserName = (TextView) mLeftView.findViewById(R.id.myUserName);
 
 		//给左边的view添加相应监听事件。
@@ -180,7 +184,7 @@ public class MainActivity extends SlidingFragmentActivity implements
 		mSettingBtn.setOnClickListener(MainActivity.this);
 		mLeftCourse.setOnClickListener(MainActivity.this);
 		mLeftSign.setOnClickListener(MainActivity.this);
-
+		mLeftDownload.setOnClickListener(MainActivity.this);
 		
 		//添加背景被点击的事件。
 		mLeftCourse
@@ -193,10 +197,11 @@ public class MainActivity extends SlidingFragmentActivity implements
 		
 		//签到的fragment
 		mBeginSignFragment = new ReleaseSignFragment();
-		
+		//下载列表的fragment
+		mDownloadFragment = new DownloadFragment();
 		//把fragment添加到list中
 		myFragmentList.add(mBeginSignFragment);
-
+		myFragmentList.add(mDownloadFragment);
 		//用开源的第三方组件来构造效果
 		//com.jeremyfeinstein.slidingmenu.lib.SlidingMenu
 		mSlidingMenu = this.getSlidingMenu();
@@ -243,6 +248,9 @@ public class MainActivity extends SlidingFragmentActivity implements
 			case 2: // 签到的fragment
 				mBeginSignFragmentCallBack();
 				break;
+			case 3: // 下载的fragment
+				mDownloadFragmentCallBack();
+				break;
 			}
 
 			
@@ -273,6 +281,12 @@ public class MainActivity extends SlidingFragmentActivity implements
 		mBeginSignFragment.setCallBack(new MyBeginSignFragmentCallBack());
 	}
 
+	/**
+	 * 从mdownloadfragment里面回调回来的事件监听设置方法
+	 */
+	private void mDownloadFragmentCallBack() {
+		mDownloadFragment.setCallBack(new MyDownloadFragmentCallBack());
+	}
 	@Override
 	public void onClick(View v) {
 		int mID = v.getId();
@@ -307,6 +321,13 @@ public class MainActivity extends SlidingFragmentActivity implements
 					.setBackgroundResource(R.drawable.side_menu_background_active);
 			createFragment(2);
 			break;
+			
+		case R.id.LeftDownload:
+			createleftviewbg();
+			mLeftDownload
+					.setBackgroundResource(R.drawable.side_menu_background_active);
+			createFragment(3);
+			break;
 		default:
 			break;
 		}
@@ -316,6 +337,7 @@ public class MainActivity extends SlidingFragmentActivity implements
 	private void createleftviewbg() {
 		mLeftCourse.setBackgroundResource(R.drawable.leftview_list_bg);
 		mLeftSign.setBackgroundResource(R.drawable.leftview_list_bg);
+		mLeftDownload.setBackgroundResource(R.drawable.leftview_list_bg);
 	}
 
 	@Override
@@ -388,6 +410,24 @@ public class MainActivity extends SlidingFragmentActivity implements
 		}
 
 	}
+	
+	private class MyDownloadFragmentCallBack implements
+			DownloadFragmentCallBack {
+
+		@Override
+		public void callback(int flag) {
+			switch (flag) {
+			case R.id.Menu:
+				MainActivity.this.toggle();
+				break;
+				//这里就没有上一个的那个加入新的东西的模块
+			default:
+				break;
+			}
+		}
+	
+	}
+	
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {

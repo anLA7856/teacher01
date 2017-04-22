@@ -24,7 +24,6 @@ import csust.teacher.download.DownloadInfo;
 import csust.teacher.download.DownloadManager;
 import csust.teacher.download.DownloadRequestCallBack;
 import csust.teacher.download.DownloadService;
-import csust.teacher.download.DownloadService1;
 
 /**
  * 下载列表

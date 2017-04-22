@@ -2,8 +2,8 @@ package csust.teacher.download;
 
 /**
  * 为使用downloadmanager管理下载对象请所有listview、viewpager等对象中的holder请集成该类
- * Created by CharmingLee on 2015/5/27.
- */
+ * 
+ *  */
 public abstract class BaseDownloadHolder {
     /**
      * 下载实体

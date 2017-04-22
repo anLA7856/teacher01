@@ -3,7 +3,7 @@ package csust.teacher.download;
 import java.util.Observable;
 
 /**
- * Created by CharmingLee on 2015/5/28.
+
  */
 public class DataChanger extends Observable {
     private static DataChanger dataChanger;

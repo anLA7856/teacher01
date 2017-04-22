@@ -32,9 +32,7 @@ import csust.teacher.activity.R;
 
 
 /**
- * Author: wyouflf
- * Date: 13-11-10
- * Time: 下午8:10
+下载管理器
  */
 public class DownloadManager {
     private List<DownloadInfo> downloadInfoList;

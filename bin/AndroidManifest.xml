@@ -66,8 +66,7 @@
         </activity>
         <activity android:name="csust.teacher.activity.SignStateActivity" >
         </activity>
-        <activity android:name="csust.teacher.activity.DownloadActivity" >
-        </activity>
+
         <activity
             android:name="csust.teacher.activity.RegistetActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

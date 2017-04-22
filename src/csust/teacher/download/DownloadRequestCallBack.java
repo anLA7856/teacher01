@@ -10,7 +10,6 @@ import java.lang.ref.WeakReference;
 
 /**
  * 下载任务的监听接口，用于更新holder中保存的界面
- * Created by CharmingLee on 2015/5/27.
  */
 public class DownloadRequestCallBack extends RequestCallBack<File> {
 

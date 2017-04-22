@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,17 +31,15 @@ import android.widget.Toast;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.http.HttpHandler;
 
-import csust.teacher.activity.DownloadList;
 import csust.teacher.activity.LoginActivity;
 import csust.teacher.activity.R;
 import csust.teacher.activity.ReleaseSignInfoActivity;
-import csust.teacher.activity.SignStateActivity;
 import csust.teacher.adapter.MySignListAdapter;
 import csust.teacher.download.BaseDownloadHolder;
 import csust.teacher.download.DownloadInfo;
 import csust.teacher.download.DownloadManager;
 import csust.teacher.download.DownloadRequestCallBack;
-import csust.teacher.info.SignInfo;
+import csust.teacher.download.DownloadService;
 import csust.teacher.model.Model;
 import csust.teacher.utils.MyJson;
 
@@ -93,12 +92,16 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 		view = inflater.inflate(R.layout.frame_download, null);
 		ctx = view.getContext();
 		// 这是鸡肋，可能需要改！！！！！！
-	
+		if (downloadManager == null) {
+            downloadManager = DownloadService.getDownloadManager(ctx);
+        }
 		initView();
 		return view;
 	}
 
 	private void initView() {
+		downloadFinishInfos = new ArrayList<DownloadInfo>();
+	    downloadingInfos = new ArrayList<DownloadInfo>();
 		load_progressBar = (LinearLayout) view
 				.findViewById(R.id.load_progressBar);
 		mLinearLayout = (LinearLayout) view.findViewById(R.id.HomeGroup);
@@ -112,9 +115,11 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 		mAddSignInfo.setOnClickListener(this);
 		HomeNoValue.setVisibility(View.GONE);
 
-
+		myAdapter = new MyAdapter();
+        act_download_list.setAdapter(myAdapter);
+        
 		if (Model.MYUSERINFO != null) {
-			
+			load_progressBar.setVisibility(View.GONE);
 			mLinearLayout.setVisibility(View.VISIBLE);
 		} else {
 			// 为空的时候，直接显示请先登录
@@ -195,6 +200,7 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 
 		if (Model.MYUSERINFO != null) {
 			isFirst = true;
+			load_progressBar.setVisibility(View.GONE);
 			mLinearLayout.setVisibility(View.VISIBLE);
 		} else {
 			// 为空的时候，直接显示请先登录
@@ -217,6 +223,7 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 	 private class MyAdapter extends BaseAdapter {
 
 	        public MyAdapter() {
+	        	Log.d("ee", "ee");
 	            downloadInfoList = downloadManager.getDownloadInfoList();
 	            initData();
 	        }

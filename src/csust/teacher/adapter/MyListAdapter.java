@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -196,14 +197,9 @@ public class MyListAdapter extends BaseAdapter{
 					Toast.makeText(MyListAdapter.this.ctx, "生成数据报表文件成功！", 1).show();
 					//进入下载页面，直接进行下载，利用notification
 					//修改后，不必进入下载页面，直接给个notification，然后后台下载，从另一个入口查看下载消息。
-					String fileName = Model.MYUSERINFO.getTeacher_name()+"-"+Model.MYUSERINFO.getTeacher_username()+"-"+result.split(",")[1];
+					String fileName = Model.MYUSERINFO.getTeacher_name()+"-"+Model.MYUSERINFO.getTeacher_username()+"-"+result.split(",")[1]+System.currentTimeMillis();
 					beginDownload(Model.USERREPORTURL+result.split(",")[0],fileName);
-					
 				}
-				
-				
-				
-				
 			}
 		};
 	};
@@ -221,10 +217,10 @@ public class MyListAdapter extends BaseAdapter{
 //		// intent.putExtra("value", bund);
 //		intent.putExtras(bund);
 //		ctx.startActivity(intent);
-		String target = Model.REPORTDATALOCATION;
+		String target = Model.REPORTDATALOCATION+fileName+".xls";
 		 try {
 			 //直接在后台下载。
-	            downloadManager.addNewDownload(url,fileName,target,true,true,new DownloadRequestCallBack());
+	         downloadManager.addNewDownload(url,fileName,target,true,true,new DownloadRequestCallBack());
 	     } catch (DbException e) {
 	            e.printStackTrace();
 	     }

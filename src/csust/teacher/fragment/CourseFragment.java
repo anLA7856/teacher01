@@ -169,7 +169,6 @@ public class CourseFragment extends Fragment implements OnClickListener {
 						HomeNoValue.setVisibility(View.VISIBLE);
 					} else {
 						mLinearLayout.setVisibility(View.VISIBLE);
-
 					}
 				}
 

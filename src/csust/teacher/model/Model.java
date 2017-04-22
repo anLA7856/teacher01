@@ -14,7 +14,7 @@ public class Model {
 
 	public static String BASELOCATION = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
 	public static String LOCALSTORAGE = BASELOCATION+"/sign/";
-	public static String REPORTDATALOCATION = LOCALSTORAGE+"/report/";
+	public static String REPORTDATALOCATION = LOCALSTORAGE+"download/";
 	public static String UPLOADPIC = "teaUploadPic";
 	public static String UPLOADNEWCOURSE = "uploadNewCourse";
 	public static String TEADELETECOURSE = "teaDeleteCourse?";

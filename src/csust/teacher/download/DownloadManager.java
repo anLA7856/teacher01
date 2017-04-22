@@ -51,7 +51,9 @@ public class DownloadManager {
         mContext = appContext;
         db = DbUtils.create(mContext);
         try {
+        	
             downloadInfoList = db.findAll(Selector.from(DownloadInfo.class));
+            
         } catch (DbException e) {
             LogUtils.e(e.getMessage(), e);
         }
@@ -94,6 +96,7 @@ public class DownloadManager {
         HttpHandler<File> handler = http.download(url, target, autoResume, autoRename, new ManagerCallBack(downloadInfo, callback));
         downloadInfo.setHandler(handler);
         downloadInfo.setState(handler.getState());
+       
         downloadInfoList.add(downloadInfo);
         db.saveBindingId(downloadInfo);
 
@@ -134,7 +137,7 @@ public class DownloadManager {
             intent.setAction(android.content.Intent.ACTION_VIEW);
             File file = new File(downloadInfo.getFileSavePath());
             Uri uri = Uri.fromFile(file);
-            intent.setDataAndType(uri, "application/vnd.android.package-archive");
+            intent.setDataAndType(uri, "application/vnd.ms-excel");
         }else{//下载中打开下载列表
             intent = new Intent();
             intent.setClass(mContext,DownloadList.class);
@@ -241,7 +244,7 @@ public class DownloadManager {
         }
         if(progress >= 100){
             mRemoteViews.setProgressBar(R.id.pb_progress, 100, 100, false);
-            mRemoteViews.setTextViewText(R.id.tv_state, "下载完成，点击安装");
+            mRemoteViews.setTextViewText(R.id.tv_state, "下载完成，点击打开");
 //            mRemoteViews.setViewVisibility(R.id.pb_progress, View.GONE);
             mBuilder.setContentIntent(getPendingIntent(true,downloadInfo));
             mBuilder.setAutoCancel(true);

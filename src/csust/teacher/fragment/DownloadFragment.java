@@ -1,5 +1,7 @@
 package csust.teacher.fragment;
 
+import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,8 +10,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,22 +18,30 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.http.HttpHandler;
+
+import csust.teacher.activity.DownloadList;
 import csust.teacher.activity.LoginActivity;
 import csust.teacher.activity.R;
 import csust.teacher.activity.ReleaseSignInfoActivity;
 import csust.teacher.activity.SignStateActivity;
 import csust.teacher.adapter.MySignListAdapter;
+import csust.teacher.download.BaseDownloadHolder;
+import csust.teacher.download.DownloadInfo;
+import csust.teacher.download.DownloadManager;
+import csust.teacher.download.DownloadRequestCallBack;
 import csust.teacher.info.SignInfo;
 import csust.teacher.model.Model;
-import csust.teacher.net.ThreadPoolUtils;
-import csust.teacher.refresh.PullToRefreshLayout;
-import csust.teacher.refresh.PullToRefreshLayout.MyOnRefreshListener;
-import csust.teacher.refresh.view.PullableListView;
-import csust.teacher.thread.HttpGetThread;
 import csust.teacher.utils.MyJson;
 
 /**
@@ -45,6 +53,16 @@ import csust.teacher.utils.MyJson;
 
 public class DownloadFragment extends Fragment implements OnClickListener {
 
+	private static final int KEY_1 = 0;
+	private static final int KEY_2 = 1;
+	private static final int KEY_3 = 2;
+	private ListView act_download_list;
+	private DownloadManager downloadManager;
+	private List<DownloadInfo> downloadFinishInfos;// 完成下载的列表
+	private List<DownloadInfo> downloadingInfos;// 未完成下载的列表
+	private List<DownloadInfo> downloadInfoList;// 下载列表中的所有下载对象
+	private MyAdapter myAdapter;// 适配器
+
 	private View view;
 	private ImageView mTopImg, mAddSignInfo;
 
@@ -53,7 +71,7 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 	private TextView HomeNoValue;
 	private DownloadFragmentCallBack mDownloadFragmentCallBack;
 	private MyJson myJson = new MyJson();
-	private List<SignInfo> list = new ArrayList<SignInfo>();
+
 	private MySignListAdapter mSignAdapter = null;
 	private int mStart = 0;
 	private int mEnd = 5;
@@ -66,23 +84,16 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 	// 设置onpause标志变量
 	private boolean isPause = false;
 
-	private PullableListView listView;
-
 	// 用来判断是首次加载还是，到底部了加载
 	private boolean isFirst = true;
-
-	// 用于获取共享的PullToRefreshLayout pullToRefreshLayout
-	private static PullToRefreshLayout pullToRefreshLayout;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		view = inflater.inflate(R.layout.frame_sign, null);
+		view = inflater.inflate(R.layout.frame_download, null);
 		ctx = view.getContext();
 		// 这是鸡肋，可能需要改！！！！！！
-		if (list != null) {
-			list.removeAll(list);
-		}
+	
 		initView();
 		return view;
 	}
@@ -96,25 +107,15 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 		mTopMenuOne = (TextView) view.findViewById(R.id.TopMenuOne);
 		HomeNoValue = (TextView) view.findViewById(R.id.HomeNoValue);
 		mAddSignInfo = (ImageView) view.findViewById(R.id.AddSignInfo);
-
-		((PullToRefreshLayout) view.findViewById(R.id.refresh_view))
-				.setOnRefreshListener(new MyInnerListener());
-		listView = (PullableListView) view.findViewById(R.id.content_view);
-
+		act_download_list = (ListView) view.findViewById(R.id.act_download_list);
 		mTopImg.setOnClickListener(this);
 		mAddSignInfo.setOnClickListener(this);
 		HomeNoValue.setVisibility(View.GONE);
-		mSignAdapter = new MySignListAdapter(ctx, list);
 
-		listView.setAdapter(mSignAdapter);
 
 		if (Model.MYUSERINFO != null) {
-			isFirst = true;
-			// 第一次，获得的个数为15，也就是init_count
-			url = Model.TEAGETMYSIGNINGINFO + "startCount=" + mStart
-					+ "&student_id=" + Model.MYUSERINFO.getTeacher_id()
-					+ "&count=" + Model.INIT_COUNT;
-			ThreadPoolUtils.execute(new HttpGetThread(hand, url));
+			
+			mLinearLayout.setVisibility(View.VISIBLE);
 		} else {
 			// 为空的时候，直接显示请先登录
 			load_progressBar.setVisibility(View.GONE);
@@ -123,58 +124,7 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 			HomeNoValue.setVisibility(View.VISIBLE);
 		}
 
-		listView.setOnItemClickListener(new MainListOnItemClickListener());
-		listView.setOnItemLongClickListener(new MainListOnItemClickListener());
 	}
-
-	Handler hand = new Handler() {
-		public void handleMessage(android.os.Message msg) {
-			super.handleMessage(msg);
-			if (msg.what == 404) {
-				Toast.makeText(ctx, "找不到服务器地址", 1).show();
-				listBottomFlag = true;
-			} else if (msg.what == 100) {
-				Toast.makeText(ctx, "传输失败", 1).show();
-				listBottomFlag = true;
-			} else if (msg.what == 200) {
-				load_progressBar.setVisibility(View.GONE);
-				if (pullToRefreshLayout != null) {
-					pullToRefreshLayout
-							.refreshFinish(PullToRefreshLayout.SUCCEED);
-				}
-				String result = (String) msg.obj;
-				if (isFirst == true) {
-					// 清空
-					if (list != null) {
-						list.removeAll(list);
-					}
-				}
-				List<SignInfo> newList = myJson.getNotSignInfoList(result);
-				if (newList.size() != 0) {
-
-					for (SignInfo t : newList) {
-						list.add(t);
-					}
-					mLinearLayout.setVisibility(View.VISIBLE);
-
-				} else {
-					Toast.makeText(ctx, "已经没有了。。", 1).show();
-					if (list.size() == 0) {
-						mLinearLayout.setVisibility(View.GONE);
-						HomeNoValue.setText("暂时没有签到信息情况");
-						HomeNoValue.setVisibility(View.VISIBLE);
-					} else {
-						mLinearLayout.setVisibility(View.VISIBLE);
-
-					}
-				}
-
-				mSignAdapter.notifyDataSetChanged();
-
-			}
-			mSignAdapter.notifyDataSetChanged();
-		};
-	};
 
 	public void setCallBack(DownloadFragmentCallBack mDownloadFragmentCallBack) {
 		this.mDownloadFragmentCallBack = mDownloadFragmentCallBack;
@@ -200,7 +150,6 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 				Intent intent = new Intent(ctx, LoginActivity.class);
 				startActivity(intent);
 			}
-
 			break;
 		default:
 			break;
@@ -213,16 +162,7 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 
-			Intent intent = new Intent(ctx, SignStateActivity.class);
-
-			Bundle bund = new Bundle();
-			bund.putSerializable("courseInfo", list.get(arg2));
-			// intent.putExtra("value", bund);
-			intent.putExtras(bund);
-			startActivity(intent);
-
 		}
-
 		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view,
 				int position, long id) {
@@ -232,59 +172,20 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 					.setMessage("确认关闭本次签到(课程同学将不能继续签到！！)")
 					.setPositiveButton("确定",
 							new DialogInterface.OnClickListener() {
-
 								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
 									// 用于删除某一门课程！courseName就是course_id
-
-									String url1 = Model.CLOSESIGN
-											+ "allow_sign_id="
-											+ list.get(myPosition)
-													.getAllow_sign_id();
-
-									ThreadPoolUtils.execute(new HttpGetThread(
-											hand1, url1));
-
 								}
 							}).setNegativeButton("取消", null).show();
 			// 注意这里是防止再次出发单词点击实际，如果是false，就会出发单词短点击事件
 			return true;
 		}
-
 	}
-
-	Handler hand1 = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			if (msg.what == 404) {
-				Toast.makeText(ctx, "找不到服务器地址", 1).show();
-				listBottomFlag = true;
-			} else if (msg.what == 100) {
-				Toast.makeText(ctx, "传输失败", 1).show();
-				listBottomFlag = true;
-			} else if (msg.what == 200) {
-				String result = (String) msg.obj;
-
-				if (result.equals("[1]")) {
-					// 成功！并且刷新下，也就是重新读一下。
-					ThreadPoolUtils.execute(new HttpGetThread(hand, url));
-					Toast.makeText(ctx, "关闭本门签到成功！", 1).show();
-
-				} else {
-					// 失败！
-					Toast.makeText(ctx, "关闭本门课程失败！！！", 1).show();
-				}
-
-			}
-		}
-	};
 
 	@Override
 	public void onResume() {
 		super.onResume();
-
 		// 每次onresum时候，就要把homenovalue设为false
 		mStart = 0;
 		HomeNoValue.setVisibility(View.GONE);
@@ -292,16 +193,9 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 			return;
 		}
 
-		if (list.size() != 0) {
-			list.removeAll(list);
-		}
 		if (Model.MYUSERINFO != null) {
 			isFirst = true;
-			// 第一次，获得的个数为15，也就是init_count
-			url = Model.TEAGETMYSIGNINGINFO + "startCount=" + mStart
-					+ "&student_id=" + Model.MYUSERINFO.getTeacher_id()
-					+ "&count=" + Model.INIT_COUNT;
-			ThreadPoolUtils.execute(new HttpGetThread(hand, url));
+			mLinearLayout.setVisibility(View.VISIBLE);
 		} else {
 			// 为空的时候，直接显示请先登录
 			load_progressBar.setVisibility(View.GONE);
@@ -318,35 +212,269 @@ public class DownloadFragment extends Fragment implements OnClickListener {
 		super.onPause();
 		isPause = true;
 	}
+	
+	//三个大内部类
+	 private class MyAdapter extends BaseAdapter {
 
-	private class MyInnerListener implements MyOnRefreshListener {
+	        public MyAdapter() {
+	            downloadInfoList = downloadManager.getDownloadInfoList();
+	            initData();
+	        }
 
-		@Override
-		public void onRefresh(PullToRefreshLayout pullToRefreshLayout) {
-			DownloadFragment.pullToRefreshLayout = pullToRefreshLayout;
-			// 初始化
-			isFirst = true;
-			mStart = 0;
-			// 第一次，获得的个数为15，也就是init_count
-			url = Model.TEAGETMYSIGNINGINFO + "startCount=" + mStart
-					+ "&student_id=" + Model.MYUSERINFO.getTeacher_id()
-					+ "&count=" + Model.INIT_COUNT;
-			ThreadPoolUtils.execute(new HttpGetThread(hand, url));
-		}
+	        /**
+	         * 初始化下载完成/正在下载集合中的数据
+	         */
+	        public void initData() {
+	            downloadFinishInfos.clear();
+	            downloadingInfos.clear();
+	            for (DownloadInfo downloadInfo : downloadInfoList) {
+	                if (downloadInfo.getState() == HttpHandler.State.SUCCESS) {
+	                    downloadFinishInfos.add(0, downloadInfo);
+	                } else {
+	                    downloadingInfos.add(0, downloadInfo);
+	                }
+	            }
+	        }
 
-		@Override
-		public void onLoadMore(PullToRefreshLayout pullToRefreshLayout) {
-			DownloadFragment.pullToRefreshLayout = pullToRefreshLayout;
-			// 向下拉的时候，这个就要变成false了
-			isFirst = false;
-			mStart = list.size();
-			// 第一次，获得的个数为15，也就是init_count
-			url = Model.TEAGETMYSIGNINGINFO + "startCount=" + mStart
-					+ "&student_id=" + Model.MYUSERINFO.getTeacher_id()
-					+ "&count=" + 5;
-			ThreadPoolUtils.execute(new HttpGetThread(hand, url));
-		}
+	        @Override
+	        public int getViewTypeCount() {
+	            return 3;
+	        }
 
-	}
+	        @Override
+	        public int getItemViewType(int position) {
+	            if (position == 0) {
+	                return KEY_1;
+	            } else if (position == downloadingInfos.size() + 1) {
+	                return KEY_2;
+	            } else {
+	                return KEY_3;
+	            }
+	        }
 
+	        @Override
+	        public int getCount() {
+	            return downloadManager.getDownloadInfoListCount() + 2;
+	        }
+
+	        @Override
+	        public Object getItem(int position) {
+	            return null;
+	        }
+
+	        @Override
+	        public long getItemId(int position) {
+	            return position;
+	        }
+
+	        @Override
+	        public View getView(int position, View convertView, ViewGroup parent) {
+	            int itemViewType = getItemViewType(position);
+	            BaseDownloadHolder holder = null;
+	            if (convertView == null) {
+	                switch (itemViewType) {
+	                    case KEY_1:
+	                        convertView = LayoutInflater.from(ctx).inflate(R.layout.activity_downloadlist_downloadingtab, null);
+	                        holder = new Hodler1();
+	                        ((Hodler1) holder).act_downloadlist_tv_ing = (TextView) convertView.findViewById(R.id.act_downloadlist_tv_ing);
+	                        break;
+	                    case KEY_2:
+	                        convertView = LayoutInflater.from(ctx).inflate(R.layout.activity_downloadlist_downloadfinishtab, null);
+	                        holder = new Hodler2();
+	                        ((Hodler2) holder).act_download_tv_finish = (TextView) convertView.findViewById(R.id.act_download_tv_finish);
+	                        ((Hodler2) holder).act_download_tv_clean = (TextView) convertView.findViewById(R.id.act_download_tv_clean);
+	                        //清空记录操作
+	                        ((Hodler2) holder).act_download_tv_clean.setOnClickListener(new View.OnClickListener() {
+	                            @Override
+	                            public void onClick(View v) {
+	                                int size = downloadFinishInfos.size();
+	                                for (int i = size-1; i >= 0; i-- ) {
+	                                    DownloadInfo delInfo = downloadFinishInfos.get(i);
+	                                    String fileSavePath = delInfo.getFileSavePath();
+	                                    File file = new File(fileSavePath);
+	                                    //文件存在删除文件
+	                                    if(file.exists()){
+	                                        file.delete();
+	                                    }
+	                                    //清空数据库记录
+	                                    try {
+	                                        downloadManager.removeDownload(delInfo);
+	                                    } catch (DbException e) {
+	                                        e.printStackTrace();
+	                                    }
+
+	                                    initData();
+	                                    notifyDataSetChanged();
+	                                }
+	                            }
+	                        });
+	                        break;
+	                    case KEY_3:
+	                        convertView = View.inflate(ctx, R.layout.activity_list_view_item, null);
+	                        holder = new Hodler3();
+	                        ((Hodler3) holder).download_label = (TextView) convertView.findViewById(R.id.download_label);
+	                        ((Hodler3) holder).download_state = (TextView) convertView.findViewById(R.id.download_state);
+	                        ((Hodler3) holder).download_pb = (ProgressBar) convertView.findViewById(R.id.download_pb);
+	                        ((Hodler3) holder).download_remove_btn = (Button) convertView.findViewById(R.id.download_remove_btn);
+	                        ((Hodler3) holder).download_stop_btn = (Button) convertView.findViewById(R.id.download_stop_btn);
+	                        break;
+	                }
+	                convertView.setTag(holder);
+	            } else {
+	                switch (itemViewType) {
+	                    case KEY_1:
+	                        holder = (Hodler1) convertView.getTag();
+	                        break;
+	                    case KEY_2:
+	                        holder = (Hodler2) convertView.getTag();
+	                        break;
+	                    case KEY_3:
+	                        holder = (Hodler3) convertView.getTag();
+	                        break;
+	                }
+	            }
+	            //填充数据
+	            switch (itemViewType) {
+	                case KEY_1:
+	                    ((Hodler1) holder).act_downloadlist_tv_ing.setText("进行中(" + downloadingInfos.size() + ")");
+	                    break;
+	                case KEY_2:
+	                    ((Hodler2) holder).act_download_tv_finish.setText("已完成(" + downloadFinishInfos.size() + ")");
+
+	                    break;
+	                case KEY_3:
+	                    //=======================获取对应位置的holder设置数据===============================
+	                    if (position < downloadingInfos.size() + 1) {//下载中
+	                        // 因为显示进行中数量的布局占用了一个位置，在集合中对应位置必须-1
+	                        final DownloadInfo downloadInfo = downloadingInfos.get(position - 1);
+	                        holder.update(downloadInfo);
+	                        setHolderData((Hodler3) holder, downloadInfo, downloadManager);
+	                    } else if (position >= downloadingInfos.size() + 1 + 1) {//下载完成
+	                        // 因为显示进行中和下载完成数量的布局占用了二个位置，在集合中对应位置必须减去下载中集合的总数再-1-1
+	                        final DownloadInfo downloadInfo = downloadFinishInfos.get(position - downloadingInfos.size() - 1 - 1);
+	                        holder.update(downloadInfo);
+	                        setHolderData((Hodler3) holder, downloadInfo, downloadManager);
+	                    }
+	                    break;
+	            }
+	            return convertView;
+	        }
+
+	        /**
+	         * 为holder设置相关参数
+	         *
+	         * @param holder
+	         * @param downloadInfo
+	         */
+	        private void setHolderData(final Hodler3 holder, final DownloadInfo downloadInfo, final DownloadManager downloadManager) {
+	            if (downloadInfo != null) {
+	                holder.download_label.setText(downloadInfo.getFileName());
+	                holder.download_state.setText(downloadInfo.getState() + "");
+	                //暂停、继续、重试按钮点击事件
+	                holder.download_stop_btn.setOnClickListener(new View.OnClickListener() {
+	                    @Override
+	                    public void onClick(View v) {
+	                        try {
+	                            if(downloadInfo.getState() == HttpHandler.State.CANCELLED || downloadInfo.getState() == HttpHandler.State.FAILURE){
+	                                downloadManager.resumeDownload(downloadInfo,new DownloadRequestCallBack());
+	                            }else if(downloadInfo.getState() == HttpHandler.State.LOADING){
+	                                downloadManager.stopDownload(downloadInfo);
+	                            }
+	                            //更新Listview数据
+	                            initData();
+	                            notifyDataSetChanged();
+	                        } catch (DbException e) {
+	                            e.printStackTrace();
+	                        }
+	                    }
+	                });
+	                //取消按钮点击事件
+	                holder.download_remove_btn.setOnClickListener(new View.OnClickListener() {
+	                    @Override
+	                    public void onClick(View v) {
+	                        try {
+	                            downloadManager.removeDownload(downloadInfo);
+	                            File file = new File(downloadInfo.getFileSavePath());
+	                            if(file.exists()){
+	                                file.delete();
+	                            }
+	                            //更新Listview数据
+	                            initData();
+	                            notifyDataSetChanged();
+	                        } catch (DbException e) {
+	                            e.printStackTrace();
+	                        }
+	                    }
+	                });
+	            }
+
+	            //*****************设置更新进度回调**********************
+	            HttpHandler<File> handler = downloadInfo.getHandler();
+	            if (handler != null) {
+	                DownloadManager.ManagerCallBack requestCallBack = (DownloadManager.ManagerCallBack) handler.getRequestCallBack();
+	                if (requestCallBack.getBaseCallBack() == null) {
+	                    requestCallBack.setBaseCallBack(new DownloadRequestCallBack());
+	                }
+	                requestCallBack.setUserTag(new WeakReference<Hodler3>(holder));
+	            }
+	        }
+
+	    }
+	    //正在下载hodler
+	    private class Hodler1 extends BaseDownloadHolder {
+	        TextView act_downloadlist_tv_ing;//正在下载
+
+	        @Override
+	        public void refresh() {
+
+	        }
+
+	    }
+	    //下载完成hodler
+	    private class Hodler2 extends BaseDownloadHolder {
+	        TextView act_download_tv_finish;//下载完成标签
+	        TextView act_download_tv_clean;//清楚记录
+
+	        @Override
+	        public void refresh() {
+
+	        }
+
+	    }
+	    //下载itme hodler
+	    private class Hodler3 extends BaseDownloadHolder {
+	        public TextView download_label;//应用名称
+	        public TextView download_state;//状态
+	        public ProgressBar download_pb;//进度条
+	        public Button download_remove_btn;//取消按钮
+	        public Button download_stop_btn;//暂停继续重试按钮
+
+	        @Override
+	        public void refresh() {
+	            //更新下载进度
+	            if (downloadInfo != null) {
+	                if (downloadInfo.getFileLength() > 0) {
+	                    //根据当前下载大小和APP大小计算出的进度百分比
+	                    int prosress = (int) (downloadInfo.getProgress() * 100 / downloadInfo.getFileLength());
+	                    if (prosress >= 100) {
+	                        download_pb.setProgress(100);
+	                        myAdapter.initData();
+	                        myAdapter.notifyDataSetChanged();
+	                    }else{
+	                        download_pb.setProgress(prosress);
+	                        download_state.setText(downloadInfo.getState()+"");
+	                    }
+	                } else {
+	                    //APP大小为0时（一般不会遇到除非数据出错）
+	                    download_pb.setProgress(0);
+	                }
+	            }
+	        }
+
+	    }
+	
+
+	
+	
+	
 }

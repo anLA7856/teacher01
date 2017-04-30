@@ -32,6 +32,8 @@ import csust.teacher.fragment.DownloadFragment;
 import csust.teacher.fragment.DownloadFragment.DownloadFragmentCallBack;
 import csust.teacher.fragment.ReleaseSignFragment;
 import csust.teacher.fragment.ReleaseSignFragment.BeginSignFragmentCallBack;
+import csust.teacher.fragment.StudentFragment;
+import csust.teacher.fragment.StudentFragment.StudentFragmentCallBack;
 import csust.teacher.info.UserInfo;
 import csust.teacher.model.Model;
 import csust.teacher.utils.MyJson;
@@ -56,6 +58,8 @@ public class MainActivity extends SlidingFragmentActivity implements
 	private CourseFragment mCourseFragment;
 	//正在下载的碎片
 	private DownloadFragment mDownloadFragment;
+	//学生，即联系人的碎片
+	private StudentFragment mStudentFragment;
 	// 定义fragment管理器：
 	private FragmentManager mFragmentManager;
 	// 获取fragment栈
@@ -66,7 +70,7 @@ public class MainActivity extends SlidingFragmentActivity implements
 	private TextView myUserName;
 	private ImageView mSettingBtn; // 设置按钮
 	// leftview中下面的按钮
-	private RelativeLayout mLeftSign, mLeftCourse,mLeftDownload;
+	private RelativeLayout mLeftSign, mLeftCourse,mLeftDownload,mLeftStudent;
 	private int fragmentFlag = 0;
 	//json解析类
 	private MyJson myjson = new MyJson();
@@ -175,6 +179,7 @@ public class MainActivity extends SlidingFragmentActivity implements
 				.findViewById(R.id.LoginThisAPP);
 		mSettingBtn = (ImageView) mLeftView.findViewById(R.id.SettingBtn);
 		mLeftCourse = (RelativeLayout) mLeftView.findViewById(R.id.LeftCourse);
+		mLeftStudent =(RelativeLayout) mLeftView.findViewById(R.id.LeftStudent);
 		mLeftSign = (RelativeLayout) mLeftView.findViewById(R.id.LeftSign);
 		mLeftDownload = (RelativeLayout) mLeftView.findViewById(R.id.LeftDownload);
 		myUserName = (TextView) mLeftView.findViewById(R.id.myUserName);
@@ -183,6 +188,7 @@ public class MainActivity extends SlidingFragmentActivity implements
 		mLoginThisApp.setOnClickListener(MainActivity.this);
 		mSettingBtn.setOnClickListener(MainActivity.this);
 		mLeftCourse.setOnClickListener(MainActivity.this);
+		mLeftStudent.setOnClickListener(MainActivity.this);
 		mLeftSign.setOnClickListener(MainActivity.this);
 		mLeftDownload.setOnClickListener(MainActivity.this);
 		
@@ -191,17 +197,21 @@ public class MainActivity extends SlidingFragmentActivity implements
 				.setBackgroundResource(R.drawable.side_menu_background_active);
 		//课程的fragment
 		mCourseFragment = new CourseFragment(mNotificationManager);
-		
+		//
+		mStudentFragment = new StudentFragment(mNotificationManager);
 		//把fragment添加到list中
 		myFragmentList.add(mCourseFragment);
+		
 		
 		//签到的fragment
 		mBeginSignFragment = new ReleaseSignFragment();
 		//下载列表的fragment
 		mDownloadFragment = new DownloadFragment();
+		
 		//把fragment添加到list中
 		myFragmentList.add(mBeginSignFragment);
 		myFragmentList.add(mDownloadFragment);
+		myFragmentList.add(mStudentFragment);
 		//用开源的第三方组件来构造效果
 		//com.jeremyfeinstein.slidingmenu.lib.SlidingMenu
 		mSlidingMenu = this.getSlidingMenu();
@@ -243,13 +253,15 @@ public class MainActivity extends SlidingFragmentActivity implements
 			switch (flag) {
 			case 1: // 课程管理的fragment
 				mCourseFragmentCallBack();
-				
 				break;
 			case 2: // 签到的fragment
 				mBeginSignFragmentCallBack();
 				break;
 			case 3: // 下载的fragment
 				mDownloadFragmentCallBack();
+				break;
+			case 4:
+				mStudentFragmentCallBack();
 				break;
 			}
 
@@ -272,6 +284,10 @@ public class MainActivity extends SlidingFragmentActivity implements
 	 */
 	private void mCourseFragmentCallBack() {
 		mCourseFragment.setCallBack(new MyCourseFragmentCallBack());
+	}
+	
+	private void mStudentFragmentCallBack(){
+		mStudentFragment.setCallBack(new MyStudentFragmentCallBack());
 	}
 
 	/**
@@ -328,6 +344,11 @@ public class MainActivity extends SlidingFragmentActivity implements
 					.setBackgroundResource(R.drawable.side_menu_background_active);
 			createFragment(3);
 			break;
+		case R.id.LeftStudent:
+			createleftviewbg();
+			mLeftStudent.setBackgroundResource(R.drawable.side_menu_background_active);
+			createFragment(4);
+			break;
 		default:
 			break;
 		}
@@ -338,11 +359,11 @@ public class MainActivity extends SlidingFragmentActivity implements
 		mLeftCourse.setBackgroundResource(R.drawable.leftview_list_bg);
 		mLeftSign.setBackgroundResource(R.drawable.leftview_list_bg);
 		mLeftDownload.setBackgroundResource(R.drawable.leftview_list_bg);
+		mLeftStudent.setBackgroundResource(R.drawable.leftview_list_bg);
 	}
 
 	@Override
 	protected void onStart() {
-
 		if (Model.MYUSERINFO != null) {
 			myUserName.setText(Model.MYUSERINFO.getTeacher_username());
 			// 这里没写
@@ -387,6 +408,41 @@ public class MainActivity extends SlidingFragmentActivity implements
 		}
 
 	}
+	
+	/**
+	 * 实现studentFragment接口类
+	 * 
+	 * @author U-anLA
+	 *
+	 */
+	private class MyStudentFragmentCallBack implements StudentFragmentCallBack {
+
+		@Override
+		public void callback(int flag) {
+			switch (flag) {
+			case R.id.Menu:
+				MainActivity.this.toggle();
+				break;
+
+			case R.id.SendAshamed:
+				if (Model.MYUSERINFO != null) {
+					Intent intent = new Intent(MainActivity.this,
+							AddCourseActivity.class);
+					startActivity(intent);
+				} else {
+					Intent intent = new Intent(MainActivity.this,
+							LoginActivity.class);
+					startActivity(intent);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+
+	}
+	
+	
 
 	/**
 	 * 实现接口子类。

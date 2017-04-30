@@ -160,7 +160,7 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:id="@+id/LeftSign2"
+                android:id="@+id/LeftStudent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/leftview_list_bg" >
@@ -170,7 +170,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
-                    android:text="教务导入"
+                    android:text="我的消息"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
 

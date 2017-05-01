@@ -3,12 +3,8 @@ package csust.teacher.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -17,18 +13,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import csust.teacher.activity.CourseDetailActivity;
+import android.widget.AdapterView.OnItemClickListener;
 import csust.teacher.activity.R;
 import csust.teacher.adapter.MyCourseChatListAdapter;
-import csust.teacher.adapter.MyListAdapter;
 import csust.teacher.info.CourseInfo;
 import csust.teacher.info.StudentInfo;
 import csust.teacher.model.Model;
@@ -38,7 +31,6 @@ import csust.teacher.refresh.PullToRefreshLayout.MyOnRefreshListener;
 import csust.teacher.refresh.view.PullableListView;
 import csust.teacher.thread.HttpGetThread;
 import csust.teacher.utils.MyJson;
-import csust.teacher.utils.LoadImg.ImageDownloadCallBack;
 
 /**
  * 查看的课程列表的fragment
@@ -290,29 +282,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		};
 	};
 
-	/**
-	 * 用于获取一门课程下的所有学生列表
-	 */
-	Handler hand2 = new Handler() {
-		public void handleMessage(android.os.Message msg) {
-			super.handleMessage(msg);
-			if (msg.what == 404) {
-				Toast.makeText(ctx, "找不到服务器地址", 1).show();
-				listBottomFlag = true;
-			} else if (msg.what == 100) {
-				Toast.makeText(ctx, "传输失败", 1).show();
-				listBottomFlag = true;
-			} else if (msg.what == 200) {
-				// 正确的处理逻辑
-				String result = (String) msg.obj;
-				//获取的应该是一样的，所以myjson可以共用
-				List<StudentInfo> list = myJson.getUnsignedStudentsInfo(result);
-				//s
-				
 
-			}
-		};
-	};
 	
 	
 	
@@ -386,102 +356,16 @@ public class StudentFragment extends Fragment implements OnClickListener {
 
 	}
 	
-	/**
-	 * 用于适配课程下面的学生列表
-	 * @author U-ANLA
-	 *
-	 */
-	private class MyStudentAdapter extends BaseAdapter{
-
-		private List<StudentInfo> list;
-		private Context ctx;
-		public MyStudentAdapter(List<StudentInfo> list,Context ctx) {
-			this.list = list;
-			this.ctx = ctx;
-		}
-		
-		@Override
-		public int getCount() {
-			return list.size();
-		}
-
-		@Override
-		public Object getItem(int position) {
-			return list.get(position);
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			final StudentFragment.Holder hold;
-			
-			
-			if(convertView == null){
-				hold = new Holder();
-				convertView = View.inflate(ctx, R.layout.mylistview_chat_student_item, null);
-				hold.studentPic = (ImageView) convertView.findViewById(R.id.itemStudentPic);
-				hold.studentName = (TextView) convertView.findViewById(R.id.itemStudentName);
-				
-				convertView.setTag(hold);
-			}else{
-				hold = (Holder) convertView.getTag();
-			}
-			Object b = convertView.getTag();
-			//头像暂时没有设置
-			hold.studentName.setText(list.get(position).getStudent_name());
-			
-			
-			//设置监听
-			hold.studentPic.setOnClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					//用于和教师会话~，后期实现。
-					Toast.makeText(ctx, "查看大图后期实现", 1).show();
-				}
-			});
-			
-
-			
-			//学生各自头像。
-		//	hold.teacherPic.setImageResource(R.drawable.default_users_avatar);
-//			if(list.get(position).getTeacherNum().equalsIgnoreCase("")){
-//				hold.teacherPic.setImageResource(R.drawable.default_users_avatar);
-//			}else{
-//				hold.teacherPic.setTag(Model.USERHEADURL + list.get(position).getTeacherNum());
-//				Bitmap bitTeacher = loadImgHeadImg.loadImage(hold.teacherPic, Model.USERHEADURL+list.get(position).getTeacherNum(), new ImageDownloadCallBack() {
-//					@Override
-//					public void onImageDownload(ImageView imageView, Bitmap bitmap) {
-//						if(position >= list.size()){
-//							if(hold.teacherPic.getTag().equals(Model.USERHEADURL+list.get(position-1).getTeacherNum())){
-//								hold.teacherPic.setImageBitmap(bitmap);
-//							}
-//						}else{
-//							if(hold.teacherPic.getTag().equals(Model.USERHEADURL+list.get(position).getTeacherNum())){
-//								hold.teacherPic.setImageBitmap(bitmap);
-//							}
-//						}
-//					}
-//				});
-//				if(bitTeacher != null){
-//					hold.teacherPic.setImageBitmap(bitTeacher);
-//				}
-//			}
-			
-			return convertView;
-		}
-		
-		
-		
-	}
-	static class Holder{
-		ImageView studentPic;
-		TextView studentName;
-		
-	}
+    private class OnListItemClickListenser implements OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (position == mAdapter.getmExpandedMenuPos()) {
+            	mAdapter.setmExpandedMenuPos(-1);
+            } else {
+            	mAdapter.setmExpandedMenuPos(position);
+            }
+            mAdapter.notifyDataSetChanged();
+        }
+    }
 
 }

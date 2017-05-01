@@ -110,16 +110,13 @@
         android:layout_height="2dp"
         android:background="#FFFFFF" >
     </LinearLayout>
-	<LinearLayout
-        android:id="@+id/listview_menu_item_menu"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:visibility="visible"
-        android:orientation="horizontal" >
-        <ListView
+
+    <ListView
         android:id="@+id/listview_menu_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@null" />
-    </LinearLayout>
+        android:divider="@null" 
+        android:visibility="visible"
+        />
+
 </LinearLayout>

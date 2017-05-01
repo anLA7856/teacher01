@@ -3,8 +3,17 @@ package csust.teacher.info;
 import java.io.Serializable;
 
 public class CourseInfo implements Serializable{
+	/**
+	 * 教师号
+	 */
 	private String teacherNum;
+	/**
+	 * 课程名
+	 */
 	private String teacherName;
+	/**
+	 * 课程号
+	 */
 	private String courseName;
 	public String getTeacherNum() {
 		return teacherNum;

@@ -32,6 +32,7 @@ public class Model {
 	public static String GETUNSIGNEDSTUDENTS = "getUnsignedStudents?";
 	public static String ADDNEWSTUDENTSIGNSTATE = "addNewStudentSignState?";
 	public static String GETSIGNEDREPORT = "getSignedReport?";
+	public static String GETCOURSESTUDENTLIST = "getCourseStudentList?";
 	public static int INIT_COUNT = 15;
 	//注册用的url
 	//用post方式，所有不用问号

@@ -8,6 +8,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -18,14 +19,18 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import csust.teacher.activity.CourseDetailActivity;
 import csust.teacher.activity.R;
+import csust.teacher.adapter.MyCourseChatListAdapter;
 import csust.teacher.adapter.MyListAdapter;
 import csust.teacher.info.CourseInfo;
+import csust.teacher.info.StudentInfo;
 import csust.teacher.model.Model;
 import csust.teacher.net.ThreadPoolUtils;
 import csust.teacher.refresh.PullToRefreshLayout;
@@ -33,6 +38,7 @@ import csust.teacher.refresh.PullToRefreshLayout.MyOnRefreshListener;
 import csust.teacher.refresh.view.PullableListView;
 import csust.teacher.thread.HttpGetThread;
 import csust.teacher.utils.MyJson;
+import csust.teacher.utils.LoadImg.ImageDownloadCallBack;
 
 /**
  * 查看的课程列表的fragment
@@ -52,7 +58,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 	private StudentFragmentCallBack mStudentFragmentCallBack;
 	private MyJson myJson = new MyJson();
 	private List<CourseInfo> list = new ArrayList<CourseInfo>();
-	private MyListAdapter mAdapter = null;
+	private MyCourseChatListAdapter mAdapter = null;
 	private int mStart = 0;
 	private int mEnd = 5;
 	private String url = null;
@@ -65,6 +71,9 @@ public class StudentFragment extends Fragment implements OnClickListener {
 	private boolean isPause = false;
 
 	private PullableListView listView;
+	
+	//用于显示一门课的学生，
+	private ListView studentListView;
 
 	// 用来判断是首次加载还是，到底部了加载
 	private boolean isFirst = true;
@@ -108,7 +117,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		mTopImg.setOnClickListener(this);
 		mSendAshamed.setOnClickListener(this);
 		HomeNoValue.setVisibility(View.GONE);
-		mAdapter = new MyListAdapter(mNotificationManager,ctx, list);
+		mAdapter = new MyCourseChatListAdapter(mNotificationManager,ctx, list);
 
 		if (Model.MYUSERINFO != null) {
 			isFirst = true;
@@ -126,8 +135,8 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		}
 
 		listView.setAdapter(mAdapter);
-		listView.setOnItemClickListener(new MainListOnItemClickListener());
-		listView.setOnItemLongClickListener(new MainListOnItemClickListener());
+//		listView.setOnItemClickListener(new MainListOnItemClickListener());
+//		listView.setOnItemLongClickListener(new MainListOnItemClickListener());
 
 	}
 
@@ -202,48 +211,53 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		}
 	}
 
-	private class MainListOnItemClickListener implements OnItemClickListener,
-			OnItemLongClickListener {
-		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-				long arg3) {
-			Intent intent = new Intent(ctx, CourseDetailActivity.class);
-			Bundle bund = new Bundle();
-			bund.putSerializable("courseInfo", list.get(arg2));
-			// intent.putExtra("value", bund);
-			intent.putExtras(bund);
-			startActivity(intent);
-
-		}
-
-		@Override
-		public boolean onItemLongClick(AdapterView<?> parent, View view,
-				int position, long id) {
-
-			final int myPosition = position;
-			new AlertDialog.Builder(ctx)
-					.setTitle("删除提示框")
-					.setMessage("确认删除本门课程(相关的课程记录和签到记录均会删除！！)")
-					.setPositiveButton("确定",
-							new DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									// 用于删除某一门课程！courseName就是course_id
-									String url1 = Model.TEADELETECOURSE
-											+ "course_id="
-											+ list.get(myPosition)
-													.getCourseName();
-
-									ThreadPoolUtils.execute(new HttpGetThread(
-											hand1, url1));
-
-								}
-							}).setNegativeButton("取消", null).show();
-			// 注意这里是防止再次出发单词点击实际，如果是false，就会出发单词短点击事件
-			return true;
-		}
-	}
+//	private class MainListOnItemClickListener implements OnItemClickListener,
+//			OnItemLongClickListener {
+//		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+//				long arg3) {
+//			Toast.makeText(ctx, "嘿嘿嘿", 1).show();
+//			//用于点击事件，点一下，就展开下拉列表，是本门课程的学生。
+//			//首先向服务器发送器你去查询
+//			String getStudentUrl = Model.GETCOURSESTUDENTLIST+"courseId=" + list.get(arg2).getCourseName();
+//			ThreadPoolUtils.execute(new HttpGetThread(hand2, getStudentUrl));
+//			//			Intent intent = new Intent(ctx, CourseDetailActivity.class);
+////			Bundle bund = new Bundle();
+////			bund.putSerializable("courseInfo", list.get(arg2));
+////			// intent.putExtra("value", bund);
+////			intent.putExtras(bund);
+////			startActivity(intent);
+//
+//		}
+//
+//		@Override
+//		public boolean onItemLongClick(AdapterView<?> parent, View view,
+//				int position, long id) {
+//
+//			final int myPosition = position;
+//			new AlertDialog.Builder(ctx)
+//					.setTitle("删除提示框")
+//					.setMessage("确认删除本门课程(相关的课程记录和签到记录均会删除！！)")
+//					.setPositiveButton("确定",
+//							new DialogInterface.OnClickListener() {
+//
+//								@Override
+//								public void onClick(DialogInterface dialog,
+//										int which) {
+//									// 用于删除某一门课程！courseName就是course_id
+//									String url1 = Model.TEADELETECOURSE
+//											+ "course_id="
+//											+ list.get(myPosition)
+//													.getCourseName();
+//
+//									ThreadPoolUtils.execute(new HttpGetThread(
+//											hand1, url1));
+//
+//								}
+//							}).setNegativeButton("取消", null).show();
+//			// 注意这里是防止再次出发单词点击实际，如果是false，就会出发单词短点击事件
+//			return true;
+//		}
+//	}
 
 	/**
 	 * 用于删除某一门课程
@@ -276,6 +290,32 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		};
 	};
 
+	/**
+	 * 用于获取一门课程下的所有学生列表
+	 */
+	Handler hand2 = new Handler() {
+		public void handleMessage(android.os.Message msg) {
+			super.handleMessage(msg);
+			if (msg.what == 404) {
+				Toast.makeText(ctx, "找不到服务器地址", 1).show();
+				listBottomFlag = true;
+			} else if (msg.what == 100) {
+				Toast.makeText(ctx, "传输失败", 1).show();
+				listBottomFlag = true;
+			} else if (msg.what == 200) {
+				// 正确的处理逻辑
+				String result = (String) msg.obj;
+				//获取的应该是一样的，所以myjson可以共用
+				List<StudentInfo> list = myJson.getUnsignedStudentsInfo(result);
+				//s
+				
+
+			}
+		};
+	};
+	
+	
+	
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -344,6 +384,104 @@ public class StudentFragment extends Fragment implements OnClickListener {
 			ThreadPoolUtils.execute(new HttpGetThread(hand, url));
 		}
 
+	}
+	
+	/**
+	 * 用于适配课程下面的学生列表
+	 * @author U-ANLA
+	 *
+	 */
+	private class MyStudentAdapter extends BaseAdapter{
+
+		private List<StudentInfo> list;
+		private Context ctx;
+		public MyStudentAdapter(List<StudentInfo> list,Context ctx) {
+			this.list = list;
+			this.ctx = ctx;
+		}
+		
+		@Override
+		public int getCount() {
+			return list.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return list.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			final StudentFragment.Holder hold;
+			
+			
+			if(convertView == null){
+				hold = new Holder();
+				convertView = View.inflate(ctx, R.layout.mylistview_chat_student_item, null);
+				hold.studentPic = (ImageView) convertView.findViewById(R.id.itemStudentPic);
+				hold.studentName = (TextView) convertView.findViewById(R.id.itemStudentName);
+				
+				convertView.setTag(hold);
+			}else{
+				hold = (Holder) convertView.getTag();
+			}
+			Object b = convertView.getTag();
+			//头像暂时没有设置
+			hold.studentName.setText(list.get(position).getStudent_name());
+			
+			
+			//设置监听
+			hold.studentPic.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					//用于和教师会话~，后期实现。
+					Toast.makeText(ctx, "查看大图后期实现", 1).show();
+				}
+			});
+			
+
+			
+			//学生各自头像。
+		//	hold.teacherPic.setImageResource(R.drawable.default_users_avatar);
+//			if(list.get(position).getTeacherNum().equalsIgnoreCase("")){
+//				hold.teacherPic.setImageResource(R.drawable.default_users_avatar);
+//			}else{
+//				hold.teacherPic.setTag(Model.USERHEADURL + list.get(position).getTeacherNum());
+//				Bitmap bitTeacher = loadImgHeadImg.loadImage(hold.teacherPic, Model.USERHEADURL+list.get(position).getTeacherNum(), new ImageDownloadCallBack() {
+//					@Override
+//					public void onImageDownload(ImageView imageView, Bitmap bitmap) {
+//						if(position >= list.size()){
+//							if(hold.teacherPic.getTag().equals(Model.USERHEADURL+list.get(position-1).getTeacherNum())){
+//								hold.teacherPic.setImageBitmap(bitmap);
+//							}
+//						}else{
+//							if(hold.teacherPic.getTag().equals(Model.USERHEADURL+list.get(position).getTeacherNum())){
+//								hold.teacherPic.setImageBitmap(bitmap);
+//							}
+//						}
+//					}
+//				});
+//				if(bitTeacher != null){
+//					hold.teacherPic.setImageBitmap(bitTeacher);
+//				}
+//			}
+			
+			return convertView;
+		}
+		
+		
+		
+	}
+	static class Holder{
+		ImageView studentPic;
+		TextView studentName;
+		
 	}
 
 }

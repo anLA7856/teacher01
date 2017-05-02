@@ -3,8 +3,9 @@ package csust.teacher.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -12,25 +13,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 import csust.teacher.activity.R;
 import csust.teacher.adapter.MyCourseChatListAdapter;
-import csust.teacher.info.CourseInfo;
 import csust.teacher.info.CourseStudentListInfo;
-import csust.teacher.info.StudentInfo;
 import csust.teacher.model.Model;
 import csust.teacher.net.ThreadPoolUtils;
-import csust.teacher.refresh.PullToRefreshLayout;
-import csust.teacher.refresh.PullToRefreshLayout.MyOnRefreshListener;
-import csust.teacher.refresh.view.PullableListView;
 import csust.teacher.thread.HttpGetThread;
 import csust.teacher.utils.MyJson;
 
@@ -73,7 +67,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 	private boolean isFirst = true;
 
 
-
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,7 +115,17 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		}
 
 		listView.setAdapter(mAdapter);
-
+		
+		listView.setOnChildClickListener(new OnChildClickListener() {
+			
+			@Override
+			public boolean onChildClick(ExpandableListView parent, View v,
+					int groupPosition, int childPosition, long id) {
+				//点了我一下,然后这里就从这里进入聊天界面，应该可以从v里面获得courseid的，我估计，明天写
+				Toast.makeText(ctx, "点了我一下"+groupPosition+":"+childPosition, 1).show();
+				return true;
+			}
+		});
 
 	}
 
@@ -233,6 +237,6 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		isPause = true;
 	}
 
-
+	
 
 }

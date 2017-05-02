@@ -89,9 +89,7 @@ public class MyCourseChatListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public boolean isChildSelectable(int groupPosition, int childPosition) {  //点击子类触发事件
-		Toast.makeText(context,
-				"第" + groupPosition + "大项，第" + childPosition + "小项被点击了",
-				Toast.LENGTH_LONG).show();
+		
 		return true;
 
 	}

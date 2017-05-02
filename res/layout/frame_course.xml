@@ -92,24 +92,13 @@
         android:orientation="vertical"
         android:visibility="gone" >
 
-        <csust.teacher.refresh.PullToRefreshLayout
-            android:id="@+id/refresh_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <include layout="@layout/refresh_head" />
-            <!-- 支持所有实现Pullable接口的View -->
-
-            <csust.teacher.refresh.view.PullableListView
-                android:id="@+id/content_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/white"
-                android:divider="@color/gray"
-                android:dividerHeight="1dp" />
-
-            <include layout="@layout/load_more" />
-        </csust.teacher.refresh.PullToRefreshLayout>
+        <ExpandableListView
+            android:id="@+id/all"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:cacheColorHint="#00000000"
+            android:groupIndicator="@null"
+            android:paddingLeft="3dp" />
     </LinearLayout>
 
 </LinearLayout>

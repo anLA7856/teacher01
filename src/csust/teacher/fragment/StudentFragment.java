@@ -95,6 +95,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 	private void initView() {
 		load_progressBar = (LinearLayout) view
 				.findViewById(R.id.load_progressBar);
+		//主界面
 		mLinearLayout = (LinearLayout) view.findViewById(R.id.HomeGroup);
 
 		mTopImg = (ImageView) view.findViewById(R.id.Menu);
@@ -102,9 +103,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		mTopMenuOne = (TextView) view.findViewById(R.id.TopMenuOne);
 		HomeNoValue = (TextView) view.findViewById(R.id.HomeNoValue);
 
-		((PullToRefreshLayout) view.findViewById(R.id.refresh_view))
-				.setOnRefreshListener(new MyInnerListener());
-		listView = (PullableListView) view.findViewById(R.id.content_view);
+
 
 		mTopImg.setOnClickListener(this);
 		mSendAshamed.setOnClickListener(this);
@@ -113,11 +112,9 @@ public class StudentFragment extends Fragment implements OnClickListener {
 
 		if (Model.MYUSERINFO != null) {
 			isFirst = true;
-			// 第一次，获得的个数为15，也就是init_count
-			url = Model.GETTEACOURSE + "startCount=" + mStart + "&username="
-					+ Model.MYUSERINFO.getTeacher_id() + "&start=" + mStart
-					+ "&count=" + Model.INIT_COUNT;
-			ThreadPoolUtils.execute(new HttpGetThread(hand, url));
+			//通过教师号，查询到所有课程以及课程下
+			String getStudentUrl = Model.GETCOURSESTUDENTLIST+"teacherId=" + Model.MYUSERINFO.getTeacher_id();
+			ThreadPoolUtils.execute(new HttpGetThread(hand2, getStudentUrl));
 		} else {
 			// 为空的时候，直接显示请先登录
 			load_progressBar.setVisibility(View.GONE);
@@ -127,8 +124,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		}
 
 		listView.setAdapter(mAdapter);
-//		listView.setOnItemClickListener(new MainListOnItemClickListener());
-//		listView.setOnItemLongClickListener(new MainListOnItemClickListener());
+
 
 	}
 
@@ -203,84 +199,6 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		}
 	}
 
-//	private class MainListOnItemClickListener implements OnItemClickListener,
-//			OnItemLongClickListener {
-//		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-//				long arg3) {
-//			Toast.makeText(ctx, "嘿嘿嘿", 1).show();
-//			//用于点击事件，点一下，就展开下拉列表，是本门课程的学生。
-//			//首先向服务器发送器你去查询
-//			String getStudentUrl = Model.GETCOURSESTUDENTLIST+"courseId=" + list.get(arg2).getCourseName();
-//			ThreadPoolUtils.execute(new HttpGetThread(hand2, getStudentUrl));
-//			//			Intent intent = new Intent(ctx, CourseDetailActivity.class);
-////			Bundle bund = new Bundle();
-////			bund.putSerializable("courseInfo", list.get(arg2));
-////			// intent.putExtra("value", bund);
-////			intent.putExtras(bund);
-////			startActivity(intent);
-//
-//		}
-//
-//		@Override
-//		public boolean onItemLongClick(AdapterView<?> parent, View view,
-//				int position, long id) {
-//
-//			final int myPosition = position;
-//			new AlertDialog.Builder(ctx)
-//					.setTitle("删除提示框")
-//					.setMessage("确认删除本门课程(相关的课程记录和签到记录均会删除！！)")
-//					.setPositiveButton("确定",
-//							new DialogInterface.OnClickListener() {
-//
-//								@Override
-//								public void onClick(DialogInterface dialog,
-//										int which) {
-//									// 用于删除某一门课程！courseName就是course_id
-//									String url1 = Model.TEADELETECOURSE
-//											+ "course_id="
-//											+ list.get(myPosition)
-//													.getCourseName();
-//
-//									ThreadPoolUtils.execute(new HttpGetThread(
-//											hand1, url1));
-//
-//								}
-//							}).setNegativeButton("取消", null).show();
-//			// 注意这里是防止再次出发单词点击实际，如果是false，就会出发单词短点击事件
-//			return true;
-//		}
-//	}
-
-	/**
-	 * 用于删除某一门课程
-	 */
-	Handler hand1 = new Handler() {
-		public void handleMessage(android.os.Message msg) {
-			super.handleMessage(msg);
-			if (msg.what == 404) {
-				Toast.makeText(ctx, "找不到服务器地址", 1).show();
-				listBottomFlag = true;
-			} else if (msg.what == 100) {
-				Toast.makeText(ctx, "传输失败", 1).show();
-				listBottomFlag = true;
-			} else if (msg.what == 200) {
-				// 正确的处理逻辑
-				String result = (String) msg.obj;
-
-				if (result.equals("[1]")) {
-					// 说明删除成功！
-					Toast.makeText(ctx, "删除成功", 1).show();
-					// 这里还需要刷新
-					list.removeAll(list);
-					ThreadPoolUtils.execute(new HttpGetThread(hand, url));
-				} else {
-					Toast.makeText(ctx, "删除失败！！！", 1).show();
-					// 说明删除失败！
-				}
-
-			}
-		};
-	};
 
 
 	
@@ -302,11 +220,8 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		}
 		if (Model.MYUSERINFO != null) {
 			isFirst = true;
-			// 第一次，获得的个数为15，也就是init_count
-			url = Model.GETTEACOURSE + "startCount=" + mStart + "&username="
-					+ Model.MYUSERINFO.getTeacher_id() + "&start=" + mStart
-					+ "&count=" + Model.INIT_COUNT;
-			ThreadPoolUtils.execute(new HttpGetThread(hand, url));
+			//改成和上面一样，不要下拉刷新之类的了
+			
 		} else {
 			// 为空的时候，直接显示请先登录
 			load_progressBar.setVisibility(View.GONE);
@@ -323,49 +238,6 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		isPause = true;
 	}
 
-	private class MyInnerListener implements MyOnRefreshListener {
 
-		@Override
-		public void onRefresh(PullToRefreshLayout pullToRefreshLayout) {
-			StudentFragment.pullToRefreshLayout = pullToRefreshLayout;
-			// 初始化
-			isFirst = true;
-			mStart = 0;
-			// 第一次，获得的个数为15，也就是init_count
-			url = Model.GETTEACOURSE + "startCount=" + mStart + "&username="
-					+ Model.MYUSERINFO.getTeacher_id() + "&start=" + mStart
-					+ "&count=" + Model.INIT_COUNT;
-
-			ThreadPoolUtils.execute(new HttpGetThread(hand, url));
-		}
-
-		
-		@Override
-		public void onLoadMore(PullToRefreshLayout pullToRefreshLayout) {
-			StudentFragment.pullToRefreshLayout = pullToRefreshLayout;
-			// 向下拉的时候，这个就要变成false了
-			isFirst = false;
-			mStart = list.size();
-			// 第一次，获得的个数为15，也就是init_count
-			url = Model.GETTEACOURSE + "startCount=" + mStart + "&username="
-					+ Model.MYUSERINFO.getTeacher_id() + "&start=" + mStart
-					+ "&count=" + 5;
-
-			ThreadPoolUtils.execute(new HttpGetThread(hand, url));
-		}
-
-	}
-	
-    private class OnListItemClickListenser implements OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (position == mAdapter.getmExpandedMenuPos()) {
-            	mAdapter.setmExpandedMenuPos(-1);
-            } else {
-            	mAdapter.setmExpandedMenuPos(position);
-            }
-            mAdapter.notifyDataSetChanged();
-        }
-    }
 
 }

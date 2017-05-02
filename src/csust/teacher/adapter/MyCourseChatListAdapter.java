@@ -54,8 +54,12 @@ public class MyCourseChatListAdapter extends BaseAdapter{
 	
 	private int mExpandedMenuPos = -1;
 	
+	Holder tth = null;
 	//获得课程列表下的listview的句柄
 	private ListView myHolderListView = null;
+	
+	//获得学生列表所在的layout
+	private LinearLayout myLinearLayout = null;
 	
 	
 
@@ -116,11 +120,12 @@ public class MyCourseChatListAdapter extends BaseAdapter{
 			hold.teacherName = (TextView) convertView.findViewById(R.id.itemTeacherName);
 			hold.myListView = (ListView) convertView.findViewById(R.id.listview_menu_list);
 			hold.linearMylistAll = (LinearLayout) convertView.findViewById(R.id.linearMylistAll);
+			hold.listview_menu_item_menu = (LinearLayout) convertView.findViewById(R.id.listview_menu_item_menu);
 			convertView.setTag(hold);
 		}else{
 			hold = (Holder) convertView.getTag();
 		}
-		myHolderListView = hold.myListView;
+		
 		Object b = convertView.getTag();
 
 		hold.teacherNum.setText(list.get(position).getTeacherNum());
@@ -152,13 +157,24 @@ public class MyCourseChatListAdapter extends BaseAdapter{
 				//用于和教师会话~，后期实现。
 				//用于展开课程下学生列表
 				//首先向服务器发送器你去查询
+				//点击的时候保存句柄。
+				myHolderListView = hold.myListView;
+				tth = hold;
+				myLinearLayout = hold.listview_menu_item_menu;
+				if(myLinearLayout.getVisibility() == ListView.VISIBLE){
+					myLinearLayout.setVisibility(ListView.INVISIBLE);
+					
+					MyCourseChatListAdapter.this.notifyDataSetChanged();
+					
+					return;
+				}
 				if (position == mExpandedMenuPos) {
 	                mExpandedMenuPos = -1;
 	            } else {
 	                mExpandedMenuPos = position;
 	            }
 	            
-				
+				String t = tth.teacherNum.getText().toString();
 				
 				String getStudentUrl = Model.GETCOURSESTUDENTLIST+"courseId=" + hold.courseName.getText().toString();
 				ThreadPoolUtils.execute(new HttpGetThread(hand2, getStudentUrl));
@@ -203,6 +219,7 @@ public class MyCourseChatListAdapter extends BaseAdapter{
 		TextView teacherName;
 		ListView myListView;
 		LinearLayout linearMylistAll;
+		LinearLayout listview_menu_item_menu;
 	}
 	
 
@@ -295,8 +312,9 @@ public class MyCourseChatListAdapter extends BaseAdapter{
 				List<StudentInfo> list = myJson.getUnsignedStudentsInfo(result);
 				//s
 				myStudentAdapter = new MyStudentAdapter(list, ctx);
+				
 				myHolderListView.setAdapter(myStudentAdapter);
-				myHolderListView.setVisibility(ListView.VISIBLE);
+				myLinearLayout.setVisibility(ListView.VISIBLE);
 				myStudentAdapter.notifyDataSetChanged();
 				//课程的adapter更新。
 				notifyDataSetChanged();

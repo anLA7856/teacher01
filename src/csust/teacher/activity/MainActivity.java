@@ -198,7 +198,7 @@ public class MainActivity extends SlidingFragmentActivity implements
 		//课程的fragment
 		mCourseFragment = new CourseFragment(mNotificationManager);
 		//
-		mStudentFragment = new StudentFragment(mNotificationManager);
+		mStudentFragment = new StudentFragment();
 		//把fragment添加到list中
 		myFragmentList.add(mCourseFragment);
 		

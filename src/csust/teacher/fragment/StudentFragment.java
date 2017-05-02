@@ -14,6 +14,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -23,6 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import csust.teacher.activity.R;
 import csust.teacher.adapter.MyCourseChatListAdapter;
 import csust.teacher.info.CourseInfo;
+import csust.teacher.info.CourseStudentListInfo;
 import csust.teacher.info.StudentInfo;
 import csust.teacher.model.Model;
 import csust.teacher.net.ThreadPoolUtils;
@@ -49,7 +51,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 	private TextView HomeNoValue;
 	private StudentFragmentCallBack mStudentFragmentCallBack;
 	private MyJson myJson = new MyJson();
-	private List<CourseInfo> list = new ArrayList<CourseInfo>();
+	private List<CourseStudentListInfo> list = new ArrayList<CourseStudentListInfo>();
 	private MyCourseChatListAdapter mAdapter = null;
 	private int mStart = 0;
 	private int mEnd = 5;
@@ -62,7 +64,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 	// 设置onpause时间标志
 	private boolean isPause = false;
 
-	private PullableListView listView;
+	private ExpandableListView listView; //控件
 	
 	//用于显示一门课的学生，
 	private ListView studentListView;
@@ -70,19 +72,13 @@ public class StudentFragment extends Fragment implements OnClickListener {
 	// 用来判断是首次加载还是，到底部了加载
 	private boolean isFirst = true;
 
-	// 用于获取共享的PullToRefreshLayout pullToRefreshLayout
-	private static PullToRefreshLayout pullToRefreshLayout;
 
-	private NotificationManager mNotificationManager;
-	
-	public StudentFragment(NotificationManager mNotificationManager) {
-		this.mNotificationManager = mNotificationManager;
-	}
-	
+
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		view = inflater.inflate(R.layout.frame_course, null);
+		view = inflater.inflate(R.layout.frame_student, null);
 		ctx = view.getContext();
 		// 这是鸡肋，可能需要改！！！！！！
 		if (list != null) {
@@ -102,13 +98,14 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		mSendAshamed = (ImageView) view.findViewById(R.id.SendAshamed);
 		mTopMenuOne = (TextView) view.findViewById(R.id.TopMenuOne);
 		HomeNoValue = (TextView) view.findViewById(R.id.HomeNoValue);
+		listView = (ExpandableListView) view.findViewById(R.id.all);
 
 
 
 		mTopImg.setOnClickListener(this);
 		mSendAshamed.setOnClickListener(this);
 		HomeNoValue.setVisibility(View.GONE);
-		mAdapter = new MyCourseChatListAdapter(mNotificationManager,ctx, list);
+		mAdapter = new MyCourseChatListAdapter(list,ctx);
 
 		if (Model.MYUSERINFO != null) {
 			isFirst = true;
@@ -128,7 +125,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 
 	}
 
-	Handler hand = new Handler() {
+	Handler hand2 = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			super.handleMessage(msg);
 			if (msg.what == 404) {
@@ -139,10 +136,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 				listBottomFlag = true;
 			} else if (msg.what == 200) {
 				load_progressBar.setVisibility(View.GONE);
-				if (pullToRefreshLayout != null) {
-					pullToRefreshLayout
-							.refreshFinish(PullToRefreshLayout.SUCCEED);
-				}
+				
 				String result = (String) msg.obj;
 				if (isFirst == true) {
 					// 清空
@@ -150,10 +144,10 @@ public class StudentFragment extends Fragment implements OnClickListener {
 						list.removeAll(list);
 					}
 				}
-				List<CourseInfo> newList = myJson.getCourseInfoList(result);
+				List<CourseStudentListInfo> newList = myJson.getCourseStudentListInfo(result);
 				if (newList.size() != 0) {
 
-					for (CourseInfo t : newList) {
+					for (CourseStudentListInfo t : newList) {
 						list.add(t);
 					}
 					mLinearLayout.setVisibility(View.VISIBLE);
@@ -221,7 +215,8 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		if (Model.MYUSERINFO != null) {
 			isFirst = true;
 			//改成和上面一样，不要下拉刷新之类的了
-			
+			String getStudentUrl = Model.GETCOURSESTUDENTLIST+"teacherId=" + Model.MYUSERINFO.getTeacher_id();
+			ThreadPoolUtils.execute(new HttpGetThread(hand2, getStudentUrl));
 		} else {
 			// 为空的时候，直接显示请先登录
 			load_progressBar.setVisibility(View.GONE);

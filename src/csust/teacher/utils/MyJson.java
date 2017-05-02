@@ -8,7 +8,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import csust.teacher.chartView.Score;
+import csust.teacher.info.Course;
 import csust.teacher.info.CourseInfo;
+import csust.teacher.info.CourseStudentListInfo;
 import csust.teacher.info.SignInfo;
 import csust.teacher.info.SignNameInfo;
 import csust.teacher.info.StudentInfo;
@@ -208,7 +210,48 @@ public class MyJson {
 		return list;
 	}
 	
-	
+	/**
+	 * 解析字符串，主要用于获取课程学生列表界面的所有信息
+	 * @param result
+	 * @return   
+	 */
+	public List<CourseStudentListInfo> getCourseStudentListInfo(String result){
+		List<CourseStudentListInfo> list = null;
+		try {
+			JSONArray jay = new JSONArray(result);
+			list = new ArrayList<CourseStudentListInfo>();
+			for (int i = 0; i < jay.length(); i++) {
+				CourseStudentListInfo csl = new CourseStudentListInfo();
+				JSONObject job = jay.getJSONObject(i);
+				JSONObject course = job.getJSONObject("course");
+				JSONArray myList = job.getJSONArray("list");
+				
+				Course c = new Course();
+				c.setCourse_id(course.getInt("course_id"));
+				c.setCourse_name(course.getString("course_name"));
+				c.setTeacher_username(course.getString("teacher_username"));
+				List<StudentInfo> tempList = new ArrayList<StudentInfo>();
+				for(int j = 0;j < myList.length();j++){
+					JSONObject tempStudent = myList.getJSONObject(j);
+					StudentInfo tempStudentInfo = new StudentInfo();
+					tempStudentInfo.setStudent_id(tempStudent.getInt("student_id"));
+					tempStudentInfo.setStudent_name(tempStudent.getString("student_name"));
+					tempStudentInfo.setStudent_num(tempStudent.getString("student_num"));
+					tempStudentInfo.setStudent_password(tempStudent.getString("student_password"));
+					tempStudentInfo.setStudent_sex(tempStudent.getString("student_sex"));
+					tempStudentInfo.setStudent_username(tempStudent.getString("student_username"));
+					tempList.add(tempStudentInfo);
+				}
+				csl.setCourse(c);
+				csl.setList(tempList);
+			
+				list.add(csl);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
 	
 	
 	

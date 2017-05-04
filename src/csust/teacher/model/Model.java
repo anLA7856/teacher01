@@ -12,7 +12,7 @@ import csust.teacher.info.UserInfo;
 public class Model {
 
 
-	//public static String BASEHTTPURL = "http://115.29.50.213:8989";
+	//public static String BASEHTTPURL = "http://120.76.146.248:8989";
 	public static String BASEHTTPURL = "http://10.129.92.21:8989";
 	public static String HTTPURL = BASEHTTPURL+"/Sign1.1/";
 

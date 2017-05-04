@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import csust.teacher.chartView.Score;
+import csust.teacher.info.ChatMessage;
 import csust.teacher.info.Course;
 import csust.teacher.info.CourseInfo;
 import csust.teacher.info.CourseStudentListInfo;
@@ -253,7 +254,32 @@ public class MyJson {
 		return list;
 	}
 	
-	
+	public List<ChatMessage> getChatMessageList(String result){
+		List<ChatMessage> list = null;
+		try {
+			JSONArray jay = new JSONArray(result);
+			list = new ArrayList<ChatMessage>();
+			for (int i = 0; i < jay.length(); i++) {
+				JSONObject job = jay.getJSONObject(i);
+				ChatMessage info = new ChatMessage();
+		
+				info.setId(job.getInt("id"));
+				info.setHeadPic(job.getString("headPic"));
+				info.setChatTime(job.getString("chatTime"));
+				info.setIsCome(job.getString("isCome"));
+				info.setMessage(job.getString("message"));
+				info.setName(job.getString("name"));
+				info.setNotRead(job.getInt("notRead"));
+				info.setReceiveId(job.getInt("receiveId"));
+				info.setSenderId(job.getInt("senderId"));
+			
+				list.add(info);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
 	
 }
 

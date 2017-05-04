@@ -1,7 +1,10 @@
 package csust.teacher.model;
 
+import java.util.List;
+
 import android.os.Environment;
 import csust.teacher.activity.ChatActivity;
+import csust.teacher.info.CourseStudentListInfo;
 import csust.teacher.info.UserInfo;
 
 
@@ -34,6 +37,11 @@ public class Model {
 	public static String ADDNEWSTUDENTSIGNSTATE = "addNewStudentSignState?";
 	public static String GETSIGNEDREPORT = "getSignedReport?";
 	public static String GETCOURSESTUDENTLIST = "getCourseStudentList?";
+	public static String TEACHATMESSAGEADD = "teaChatMessageAdd?";
+	//可以和学生端一样
+	public static String STUGETNEWCHATMESSAGE = "stuGetNewChatMessage?";
+	
+	
 	public static int INIT_COUNT = 15;
 	//注册用的url
 	//用post方式，所有不用问号
@@ -51,6 +59,7 @@ public class Model {
 	public static boolean IMGFLAG = false;
 	public static UserInfo MYUSERINFO = null;
 	public static ChatActivity MYCHATACTIVITY = null;
+	public static List<CourseStudentListInfo> LIST = null;
 	// APP客服KEY
 	public static String APPKEY = "f241ebf4d4a1e1dfae6f1a3e49aad2f5";
 	/** 当前 DEMO 应用的 APP_KEY，第三方应用应该使用自己的 APP_KEY 替换该 APP_KEY */

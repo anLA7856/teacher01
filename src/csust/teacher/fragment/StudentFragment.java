@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -20,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import csust.teacher.activity.ChatActivity;
 import csust.teacher.activity.R;
 import csust.teacher.adapter.MyCourseChatListAdapter;
 import csust.teacher.info.CourseStudentListInfo;
@@ -122,6 +122,14 @@ public class StudentFragment extends Fragment implements OnClickListener {
 			public boolean onChildClick(ExpandableListView parent, View v,
 					int groupPosition, int childPosition, long id) {
 				//点了我一下,然后这里就从这里进入聊天界面，应该可以从v里面获得courseid的，我估计，明天写
+				
+				Intent intent = new Intent(ctx, ChatActivity.class);
+				Bundle bund = new Bundle();
+				bund.putSerializable("teacherId", Model.LIST.get(groupPosition).getList().get(childPosition).getStudent_id());
+
+				// 这句暂时不嫩共。
+				intent.putExtra("value", bund);
+				startActivity(intent);
 				Toast.makeText(ctx, "点了我一下"+groupPosition+":"+childPosition, 1).show();
 				return true;
 			}
@@ -149,6 +157,9 @@ public class StudentFragment extends Fragment implements OnClickListener {
 					}
 				}
 				List<CourseStudentListInfo> newList = myJson.getCourseStudentListInfo(result);
+				//存起来
+				Model.LIST = null;
+				Model.LIST = newList;
 				if (newList.size() != 0) {
 
 					for (CourseStudentListInfo t : newList) {

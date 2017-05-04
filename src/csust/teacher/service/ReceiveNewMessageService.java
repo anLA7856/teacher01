@@ -45,17 +45,17 @@ public class ReceiveNewMessageService extends Service {
 
 					} else {
 						if (cm.getSenderId() == Integer
-								.parseInt(Model.MYCHATACTIVITY.getTeacherId()
+								.parseInt(Model.MYCHATACTIVITY.getStudentId()
 										.toString())
 								&& cm.getReceiveId() == Model.MYUSERINFO
-										.getStudent_id()) {
+										.getTeacher_id()) {
 							// 说明是当前对话窗口的，从大管家那里获得引用，并更新界面,不确定是否可行
 							Model.MYCHATACTIVITY.getAdapter().upDateMsg(cm);
 						}
 					}
 
 					// 存到数据库
-					mMsgDB.saveMsg(Model.MYUSERINFO.getStudent_id() + "", cm);
+					mMsgDB.saveMsg(Model.MYUSERINFO.getTeacher_id() + "", cm);
 				}
 
 			}
@@ -105,8 +105,9 @@ public class ReceiveNewMessageService extends Service {
 						if (Model.MYUSERINFO == null) {
 							continue;
 						}
+						//可以用学生端的这个servlet。
 						url = Model.STUGETNEWCHATMESSAGE + "studentId="
-								+ Model.MYUSERINFO.getStudent_id();
+								+ Model.MYUSERINFO.getTeacher_id();
 						Log.i("service", url);
 						ThreadPoolUtils.execute(new HttpGetThread(hand, url));
 						isRun = true;

@@ -81,7 +81,7 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 //	private SendMsgAsyncTask mSendTask;
 	
 	//用于接收上个界面传来的teacherid
-	private String teacherId;
+	private String studentId;
 
 	
 	
@@ -89,13 +89,17 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 		return adapter;
 	}
 
-	public String getTeacherId() {
-		return teacherId;
+
+
+	public String getStudentId() {
+		return studentId;
 	}
 
-	public void setTeacherId(String teacherId) {
-		this.teacherId = teacherId;
+	public void setStudentId(String studentId) {
+		this.studentId = studentId;
 	}
+
+
 
 	/**
 	 * 接收到数据，用来更新listView
@@ -160,7 +164,7 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 		// 必须要这个才能，获得名字value
 		Bundle bundle = intent.getBundleExtra("value");
 
-		teacherId = bundle.getSerializable("teacherId").toString();
+		studentId = bundle.getSerializable("teacherId").toString();
 		mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		//mSpUtil = PushApplication.getInstance().getSpUtil();
 
@@ -296,7 +300,7 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 	 */
 	private List<ChatMessage> initMsgData() {
 		List<ChatMessage> list = mMsgDB
-				.getMsg(Model.MYUSERINFO.getStudent_id()+"",teacherId, MSGPAGERNUM);
+				.getMsg(Model.MYUSERINFO.getTeacher_id()+"",studentId, MSGPAGERNUM);
 		List<ChatMessage> msgList = new ArrayList<ChatMessage>();// 消息对象数组
 		if (list.size() > 0) {
 			for (ChatMessage entity : list) {
@@ -320,25 +324,25 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 		case R.id.send_btn: {
 			// 发送消息
 			String msg = mEtMsg.getText().toString();
-			ChatMessage item = new ChatMessage(0, Model.MYUSERINFO.getStudent_id(), Integer.parseInt(teacherId), msg,
-					System.currentTimeMillis()+"", 1, 2+"", Model.MYUSERINFO.getStudent_name(), "");
+			ChatMessage item = new ChatMessage(0, Model.MYUSERINFO.getTeacher_id(), Integer.parseInt(studentId), msg,
+					System.currentTimeMillis()+"", 1, 2+"", Model.MYUSERINFO.getTeacher_name(), "");
 			
 			
 			adapter.upDateMsg(item);
 			mMsgListView.setSelection(adapter.getCount() - 1);
-			mMsgDB.saveMsg(Model.MYUSERINFO.getStudent_id()+"", item);// 消息保存数据库
+			mMsgDB.saveMsg(Model.MYUSERINFO.getTeacher_id()+"", item);// 消息保存数据库
 			mEtMsg.setText("");
 
 			//发送信息。通过线程池。
 			
-			String url = Model.STUCHATMESSAGEADD + "studentId=" + Model.MYUSERINFO.getStudent_id()+"&teacherId="+teacherId+"&message="+msg;
+			String url = Model.TEACHATMESSAGEADD + "teacherId=" + Model.MYUSERINFO.getTeacher_id()+"&studentId="+studentId+"&message="+msg;
 			
 			ThreadPoolUtils.execute(new HttpGetThread(hand2, url));
 			
 			
 			
 			RecentItem recentItem = new RecentItem(
-					1, teacherId,
+					1, studentId,
 					defaultCount, defaulgUserName, msg, 0,
 					System.currentTimeMillis(), 0);
 			mRecentDB.saveRecent(recentItem);

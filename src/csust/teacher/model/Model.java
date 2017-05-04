@@ -40,6 +40,8 @@ public class Model {
 	public static String TEACHATMESSAGEADD = "teaChatMessageAdd?";
 	//可以和学生端一样
 	public static String STUGETNEWCHATMESSAGE = "stuGetNewChatMessage?";
+	//可以和学生端一样
+	public static String STUGETALLCHATMESSAGE = "stuGetAllChatMessage?";
 	
 	
 	public static int INIT_COUNT = 15;

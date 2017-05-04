@@ -13,7 +13,6 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -23,9 +22,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import csust.teacher.database.MessageDB;
+import csust.teacher.info.ChatMessage;
 import csust.teacher.info.UserInfo;
 import csust.teacher.model.Model;
 import csust.teacher.net.ThreadPoolUtils;
+import csust.teacher.thread.HttpGetThread;
 import csust.teacher.thread.HttpPostThread;
 import csust.teacher.utils.MyJson;
 import csust.teacher.utils.WifiAdmin;
@@ -60,12 +62,14 @@ public class LoginActivity extends Activity implements OnClickListener{
 	//定义进度匡
 	private ProgressDialog mProDialog;
 	
+	private MessageDB messageDB = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_login);
+		messageDB = new MessageDB(getApplicationContext());
 		initView();
 	}
 
@@ -203,6 +207,14 @@ public class LoginActivity extends Activity implements OnClickListener{
 					if (newList != null) {
 						Model.MYUSERINFO = newList.get(0);
 					}
+					
+					//获取聊天数据
+					String url1 = Model.STUGETALLCHATMESSAGE + "studentId="+Model.MYUSERINFO.getTeacher_id();
+					
+					ThreadPoolUtils.execute(new HttpGetThread(hand1, url1));
+					//
+					
+					
 					Intent intent = new Intent(LoginActivity.this,
 							UserInfoActivity.class);
 					Bundle bund = new Bundle();
@@ -298,6 +310,30 @@ public class LoginActivity extends Activity implements OnClickListener{
 		//如果pause，就直接destory
 		onDestroy();
 	}
+	
+	Handler hand1 = new Handler() {
+		public void handleMessage(android.os.Message msg) {
+			// 进度匡消失,这里才消失
+			mProDialog.dismiss();
+
+			super.handleMessage(msg);
+			if (msg.what == 404) {
+				Toast.makeText(LoginActivity.this, "请求失败，服务器故障", 1).show();
+			} else if (msg.what == 100) {
+				Toast.makeText(LoginActivity.this, "服务器无响应", 1).show();
+			} else if (msg.what == 200) {
+				String result = (String) msg.obj;
+				// Log.e("loginInfo", result);
+				//从服务器把所有获得了的聊天信息都保存下来。
+				List<ChatMessage> list = myJson.getChatMessageList(result);
+				for(int i = 0;i < list.size();i++){
+					messageDB.saveMsg(Model.MYUSERINFO.getTeacher_id()+"", list.get(i));
+				}
+			}
+		};
+	};
+	
+	
 	
 }	
 

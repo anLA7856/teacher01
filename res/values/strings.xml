@@ -41,7 +41,7 @@
     <string name="xlistview_footer_hint_ready">松开载入更多</string>
     <string name="press_again_backrun">再按一次后台运行</string>
     <string name="press_again_exit">再按一次退出应用</string>
-    <string name="app_is_run_background">在飞聊天Demo正在后台运行</string>
+    <string name="app_is_run_background">聊天服务在后台运行</string>
     <string name="pull_to_refresh_pull_label">下拉刷新…</string>
     <string name="pull_to_refresh_release_label">放开以刷新…</string>
     <string name="pull_to_refresh_refreshing_label">正在载入…</string>

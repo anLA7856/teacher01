@@ -78,7 +78,7 @@ public class SignTeacherApp extends Application {
         // 不转换没有 @Expose 注解的字段
 //        mGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
 //                .create();
-//        mSpUtil = new SharePreferenceUtil(this, SP_FILE_NAME);
+        mSpUtil = new SharePreferenceUtil(this, SP_FILE_NAME);
         mUserDB = new UserDB(this);
         mMsgDB = new MessageDB(this);
         mRecentDB = new RecentDB(this);

@@ -66,6 +66,8 @@
         </activity>
         <activity android:name="csust.teacher.activity.SignStateActivity" >
         </activity>
+        <activity android:name="csust.teacher.activity.ChatActivity" >
+        </activity>
 
         <activity
             android:name="csust.teacher.activity.RegistetActivity"

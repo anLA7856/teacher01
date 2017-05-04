@@ -1,6 +1,7 @@
 package csust.teacher.model;
 
 import android.os.Environment;
+import csust.teacher.activity.ChatActivity;
 import csust.teacher.info.UserInfo;
 
 
@@ -49,6 +50,7 @@ public class Model {
 
 	public static boolean IMGFLAG = false;
 	public static UserInfo MYUSERINFO = null;
+	public static ChatActivity MYCHATACTIVITY = null;
 	// APP客服KEY
 	public static String APPKEY = "f241ebf4d4a1e1dfae6f1a3e49aad2f5";
 	/** 当前 DEMO 应用的 APP_KEY，第三方应用应该使用自己的 APP_KEY 替换该 APP_KEY */

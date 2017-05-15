@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import csust.teacher.activity.R;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -19,11 +18,12 @@ import android.graphics.PathEffect;
 import android.graphics.Shader;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import csust.teacher.activity.R;
 
 /**
  * 线框图
  * 
- * @author Administrator
+ * @author anLA7856
  * 
  */
 public class MyDiagram extends View {

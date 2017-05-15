@@ -1,7 +1,11 @@
 package csust.teacher.download;
 
 import java.io.File;
-
+/**
+ * 
+ * @author 
+ *
+ */
 public interface DownloadListener {
 
 	void onStart(int fileByteSize);

@@ -2,9 +2,6 @@ package csust.teacher.chartView;
 
 import java.util.List;
 
-
-
-import csust.teacher.activity.R;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -15,12 +12,12 @@ import android.graphics.RectF;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.view.ViewTreeObserver.OnPreDrawListener;
+import csust.teacher.activity.R;
 
 /**
  * 柱状图
  * 
- * @author Administrator
+ * @author anLA7856
  * 
  */
 public class MyColumnar extends View {

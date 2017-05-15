@@ -47,10 +47,9 @@ import csust.teacher.utils.MyJson;
 /**
  * 教师端的展示正在下载的签到报表。
  * 
- * @author U-anLA
+ * @author anLA7856
  *
  */
-
 public class DownloadFragment extends Fragment implements OnClickListener {
 
 	private static final int KEY_1 = 0;

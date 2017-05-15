@@ -31,7 +31,7 @@ import csust.teacher.utils.MyJson;
 /**
  * 查看的课程列表的fragment
  * 
- * @author U-anLA
+ * @author anLA7856
  *
  */
 
@@ -58,16 +58,13 @@ public class StudentFragment extends Fragment implements OnClickListener {
 	// 设置onpause时间标志
 	private boolean isPause = false;
 
-	private ExpandableListView listView; //控件
-	
-	//用于显示一门课的学生，
+	private ExpandableListView listView; // 控件
+
+	// 用于显示一门课的学生，
 	private ListView studentListView;
 
 	// 用来判断是首次加载还是，到底部了加载
 	private boolean isFirst = true;
-
-
-	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,7 +82,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 	private void initView() {
 		load_progressBar = (LinearLayout) view
 				.findViewById(R.id.load_progressBar);
-		//主界面
+		// 主界面
 		mLinearLayout = (LinearLayout) view.findViewById(R.id.HomeGroup);
 
 		mTopImg = (ImageView) view.findViewById(R.id.Menu);
@@ -94,17 +91,16 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		HomeNoValue = (TextView) view.findViewById(R.id.HomeNoValue);
 		listView = (ExpandableListView) view.findViewById(R.id.all);
 
-
-
 		mTopImg.setOnClickListener(this);
 		mSendAshamed.setOnClickListener(this);
 		HomeNoValue.setVisibility(View.GONE);
-		mAdapter = new MyCourseChatListAdapter(list,ctx);
+		mAdapter = new MyCourseChatListAdapter(list, ctx);
 
 		if (Model.MYUSERINFO != null) {
 			isFirst = true;
-			//通过教师号，查询到所有课程以及课程下
-			String getStudentUrl = Model.GETCOURSESTUDENTLIST+"teacherId=" + Model.MYUSERINFO.getTeacher_id();
+			// 通过教师号，查询到所有课程以及课程下
+			String getStudentUrl = Model.GETCOURSESTUDENTLIST + "teacherId="
+					+ Model.MYUSERINFO.getTeacher_id();
 			ThreadPoolUtils.execute(new HttpGetThread(hand2, getStudentUrl));
 		} else {
 			// 为空的时候，直接显示请先登录
@@ -115,22 +111,25 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		}
 
 		listView.setAdapter(mAdapter);
-		
+
 		listView.setOnChildClickListener(new OnChildClickListener() {
-			
+
 			@Override
 			public boolean onChildClick(ExpandableListView parent, View v,
 					int groupPosition, int childPosition, long id) {
-				//点了我一下,然后这里就从这里进入聊天界面，应该可以从v里面获得courseid的，我估计，明天写
-				
+				// 点了我一下,然后这里就从这里进入聊天界面，应该可以从v里面获得courseid的，我估计，明天写
+
 				Intent intent = new Intent(ctx, ChatActivity.class);
 				Bundle bund = new Bundle();
-				bund.putSerializable("teacherId", Model.LIST.get(groupPosition).getList().get(childPosition).getStudent_id());
+				bund.putSerializable("teacherId", Model.LIST.get(groupPosition)
+						.getList().get(childPosition).getStudent_id());
 
 				// 这句暂时不嫩共。
 				intent.putExtra("value", bund);
 				startActivity(intent);
-				Toast.makeText(ctx, "点了我一下"+groupPosition+":"+childPosition, 1).show();
+				Toast.makeText(ctx,
+						"点了我一下" + groupPosition + ":" + childPosition, 1)
+						.show();
 				return true;
 			}
 		});
@@ -148,7 +147,7 @@ public class StudentFragment extends Fragment implements OnClickListener {
 				listBottomFlag = true;
 			} else if (msg.what == 200) {
 				load_progressBar.setVisibility(View.GONE);
-				
+
 				String result = (String) msg.obj;
 				if (isFirst == true) {
 					// 清空
@@ -156,8 +155,9 @@ public class StudentFragment extends Fragment implements OnClickListener {
 						list.removeAll(list);
 					}
 				}
-				List<CourseStudentListInfo> newList = myJson.getCourseStudentListInfo(result);
-				//存起来
+				List<CourseStudentListInfo> newList = myJson
+						.getCourseStudentListInfo(result);
+				// 存起来
 				Model.LIST = null;
 				Model.LIST = newList;
 				if (newList.size() != 0) {
@@ -208,11 +208,6 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		}
 	}
 
-
-
-	
-	
-	
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -229,8 +224,9 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		}
 		if (Model.MYUSERINFO != null) {
 			isFirst = true;
-			//改成和上面一样，不要下拉刷新之类的了
-			String getStudentUrl = Model.GETCOURSESTUDENTLIST+"teacherId=" + Model.MYUSERINFO.getTeacher_id();
+			// 改成和上面一样，不要下拉刷新之类的了
+			String getStudentUrl = Model.GETCOURSESTUDENTLIST + "teacherId="
+					+ Model.MYUSERINFO.getTeacher_id();
 			ThreadPoolUtils.execute(new HttpGetThread(hand2, getStudentUrl));
 		} else {
 			// 为空的时候，直接显示请先登录
@@ -247,7 +243,5 @@ public class StudentFragment extends Fragment implements OnClickListener {
 		super.onPause();
 		isPause = true;
 	}
-
-	
 
 }

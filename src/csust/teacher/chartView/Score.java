@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * 记录一次签到，封装一次
  * 
- * @author U-anLA
+ * @author anLA7856
  *
  */
 public class Score implements Serializable {

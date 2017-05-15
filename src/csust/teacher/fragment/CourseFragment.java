@@ -37,10 +37,9 @@ import csust.teacher.utils.MyJson;
 /**
  * 查看的课程列表的fragment
  * 
- * @author U-anLA
+ * @author anLA7856
  *
  */
-
 public class CourseFragment extends Fragment implements OnClickListener {
 
 	private View view;
@@ -73,11 +72,11 @@ public class CourseFragment extends Fragment implements OnClickListener {
 	private static PullToRefreshLayout pullToRefreshLayout;
 
 	private NotificationManager mNotificationManager;
-	
+
 	public CourseFragment(NotificationManager mNotificationManager) {
 		this.mNotificationManager = mNotificationManager;
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -108,7 +107,7 @@ public class CourseFragment extends Fragment implements OnClickListener {
 		mTopImg.setOnClickListener(this);
 		mSendAshamed.setOnClickListener(this);
 		HomeNoValue.setVisibility(View.GONE);
-		mAdapter = new MyListAdapter(mNotificationManager,ctx, list);
+		mAdapter = new MyListAdapter(mNotificationManager, ctx, list);
 
 		if (Model.MYUSERINFO != null) {
 			isFirst = true;
@@ -329,7 +328,6 @@ public class CourseFragment extends Fragment implements OnClickListener {
 			ThreadPoolUtils.execute(new HttpGetThread(hand, url));
 		}
 
-		
 		@Override
 		public void onLoadMore(PullToRefreshLayout pullToRefreshLayout) {
 			CourseFragment.pullToRefreshLayout = pullToRefreshLayout;

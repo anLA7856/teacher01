@@ -39,10 +39,9 @@ import csust.teacher.utils.MyJson;
 /**
  * 教师端的展示自己正在签到的条项
  * 
- * @author U-anLA
+ * @author anLA7856
  *
  */
-
 public class ReleaseSignFragment extends Fragment implements OnClickListener {
 
 	private View view;

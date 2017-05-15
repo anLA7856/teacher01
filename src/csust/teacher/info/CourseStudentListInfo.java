@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * 与Android教师端对应，
  * 
- * @author U-ANLA
+ * @author anLA7856
  *
  */
 public class CourseStudentListInfo {

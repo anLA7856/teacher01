@@ -1,10 +1,9 @@
 package csust.teacher.info;
 
-
 /**
  * 聊天实体类。
  * 
- * @author U-ANLA
+ * @author anLA7856
  *
  */
 public class ChatMessage {
@@ -117,8 +116,5 @@ public class ChatMessage {
 	public ChatMessage() {
 		super();
 	}
-	
-	
-	
 
 }

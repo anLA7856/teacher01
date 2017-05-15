@@ -17,6 +17,12 @@ import csust.teacher.thread.HttpGetThread;
 import csust.teacher.utils.MyJson;
 import csust.teacher.utils.NetUtil;
 
+/**
+ * 用于从服务器拉取消息
+ * 
+ * @author anLA7856
+ *
+ */
 public class ReceiveNewMessageService extends Service {
 
 	private volatile boolean isRun = false;
@@ -105,7 +111,7 @@ public class ReceiveNewMessageService extends Service {
 						if (Model.MYUSERINFO == null) {
 							continue;
 						}
-						//可以用学生端的这个servlet。
+						// 可以用学生端的这个servlet。
 						url = Model.STUGETNEWCHATMESSAGE + "studentId="
 								+ Model.MYUSERINFO.getTeacher_id();
 						Log.i("service", url);

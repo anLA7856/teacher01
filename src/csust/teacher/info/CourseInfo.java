@@ -2,7 +2,16 @@ package csust.teacher.info;
 
 import java.io.Serializable;
 
+/**
+ * 
+ * @author anLA7856
+ *
+ */
 public class CourseInfo implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * 教师号
 	 */

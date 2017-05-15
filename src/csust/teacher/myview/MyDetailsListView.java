@@ -7,10 +7,9 @@ import android.widget.ListView;
 /**
  * 计算listview的高度加载到scrollview中
  * 
- * @author 534429149
+ * @author anLA7856
  * 
  */
-
 public class MyDetailsListView extends ListView {
 	public MyDetailsListView(Context context) {
 		super(context);

@@ -1,9 +1,11 @@
 package csust.teacher.info;
 
 import java.io.Serializable;
+
 /**
  * 与数据库的course表对应
- * @author U-anLA
+ * 
+ * @author anLA7856
  *
  */
 public class Course implements Serializable {

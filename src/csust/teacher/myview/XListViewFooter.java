@@ -1,9 +1,3 @@
-/**
- * @file XFooterView.java
- * @create Mar 31, 2012 9:33:43 PM
- * @author Maxwin
- * @description XListView's footer
- */
 package csust.teacher.myview;
 
 import android.content.Context;
@@ -14,7 +8,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import csust.teacher.activity.R;
 
-
+/**
+ * 
+ * @author anLA7856
+ *
+ */
 public class XListViewFooter extends LinearLayout {
 	public final static int STATE_NORMAL = 0;
 	public final static int STATE_READY = 1;

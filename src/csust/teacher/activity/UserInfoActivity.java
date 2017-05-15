@@ -49,7 +49,7 @@ import csust.teacher.utils.MyJson;
 /**
  * 个人信息的activity
  * 
- * @author U-anLA
+ * @author anLA7856
  *
  */
 public class UserInfoActivity extends Activity implements OnClickListener {
@@ -85,11 +85,11 @@ public class UserInfoActivity extends Activity implements OnClickListener {
 	// 定义progressbar
 	private LinearLayout Detail__progressBar;
 	private RelativeLayout Detail_CommentsNum;
-	
-	//定义自定义alertdialog的句柄，用于修改密码和修改个人信息
+
+	// 定义自定义alertdialog的句柄，用于修改密码和修改个人信息
 	private AlertDialog mAlertPassword;
 	private AlertDialog mAlertUserInfo;
-	
+
 	private ProgressDialog mProDialog;
 
 	@SuppressLint("NewApi")
@@ -143,13 +143,11 @@ public class UserInfoActivity extends Activity implements OnClickListener {
 	}
 
 	private void initView() {
-		//初始化progrossdialog
+		// 初始化progrossdialog
 		mProDialog = new ProgressDialog(this);
-		//设置为不可撤销
+		// 设置为不可撤销
 		mProDialog.setCancelable(false);
-		
-		
-		
+
 		mBrief = (LinearLayout) findViewById(R.id.Brief);
 		mBrief = (LinearLayout) findViewById(R.id.Brief);
 		mQiushi = (LinearLayout) findViewById(R.id.Qiushi);
@@ -226,19 +224,15 @@ public class UserInfoActivity extends Activity implements OnClickListener {
 			}
 		}
 	}
-	
-	
-	private void myLogout(){
+
+	private void myLogout() {
 		Model.MYUSERINFO = null;
-		SharedPreferences sp = getSharedPreferences(
-				"UserInfo", MODE_PRIVATE);
+		SharedPreferences sp = getSharedPreferences("UserInfo", MODE_PRIVATE);
 		Editor editor = sp.edit();
 		editor.clear();
 		editor.commit();
 
-		Intent intent = new Intent(
-				UserInfoActivity.this,
-				LoginActivity.class);
+		Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
 		startActivity(intent);
 		finish();
 	}
@@ -404,13 +398,13 @@ public class UserInfoActivity extends Activity implements OnClickListener {
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_group_modify_base_info:
-			Toast.makeText(this, "待加入。。",
-					Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "待加入。。", Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.action_modify_password:
-//			Toast.makeText(this, "action_modify_password", Toast.LENGTH_SHORT)
-//					.show();
-			//修改密码
+			// Toast.makeText(this, "action_modify_password",
+			// Toast.LENGTH_SHORT)
+			// .show();
+			// 修改密码
 			modifyPassword();
 			break;
 		case R.id.action_wait_in:
@@ -429,59 +423,74 @@ public class UserInfoActivity extends Activity implements OnClickListener {
 				.from(UserInfoActivity.this);
 		View modifyPasswordView = layoutInflater.inflate(
 				R.layout.modify_password, null);
-		
-		final EditText oldPassword = (EditText) modifyPasswordView.findViewById(R.id.modify_password_oldpassword);
-		final EditText newPassword1 = (EditText) modifyPasswordView.findViewById(R.id.modify_password_newpassword1);
-		final EditText newPassword2 = (EditText) modifyPasswordView.findViewById(R.id.modify_password_newpassword2);
 
+		final EditText oldPassword = (EditText) modifyPasswordView
+				.findViewById(R.id.modify_password_oldpassword);
+		final EditText newPassword1 = (EditText) modifyPasswordView
+				.findViewById(R.id.modify_password_newpassword1);
+		final EditText newPassword2 = (EditText) modifyPasswordView
+				.findViewById(R.id.modify_password_newpassword2);
 
-		
-		
-		 mAlertPassword = new AlertDialog.Builder(UserInfoActivity.this)
-		.setTitle("修改密码").setView(modifyPasswordView).setPositiveButton("确定", new android.content.DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				//当点击确定的时候的操作。
-		
-				String strOld = oldPassword.getText().toString().trim();
-				String strNew1 = newPassword1.getText().toString().trim();
-				String strNew2 = newPassword2.getText().toString().trim();
-				//判断输入是否合法
-				//定义检测包
-				CharacterUtil cu = new CharacterUtil();
-		
-				
-				
-				//检测
-				if(cu.checkPasswordInput(UserInfoActivity.this, strOld) == true && cu.checkPasswordInput(UserInfoActivity.this, strNew1) == true && cu.checkPasswordInput(UserInfoActivity.this, strNew2) == true){
-					//当全部检测通过的时候才可以进行下面的操作。
-					if(!strOld.equals(Model.MYUSERINFO.getTeacher_password())){
-						Toast.makeText(UserInfoActivity.this, "原密码输入有误", 1).show();
-						return;
-					}
-					if(!strNew1.equals(strNew2)){
-						Toast.makeText(UserInfoActivity.this, "两次新密码输入不一致", 1).show();
-						return;
-					}
-					//正确的处理逻辑
-					
-					mProDialog.setTitle("修改中");
-					mProDialog.show();
-					String modifyPsswordUrl = Model.TEAMODIFYPASSWORD +"teacher_id="+Model.MYUSERINFO.getTeacher_id()+"&new="+strNew2;
-					ThreadPoolUtils.execute(new HttpGetThread(hand1, modifyPsswordUrl));
-				}
-				
-				
-			}
-		}).setNegativeButton("取消", null).create();
+		mAlertPassword = new AlertDialog.Builder(UserInfoActivity.this)
+				.setTitle("修改密码")
+				.setView(modifyPasswordView)
+				.setPositiveButton("确定",
+						new android.content.DialogInterface.OnClickListener() {
 
-		 mAlertPassword.show();
-		
-		
-		
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								// 当点击确定的时候的操作。
+
+								String strOld = oldPassword.getText()
+										.toString().trim();
+								String strNew1 = newPassword1.getText()
+										.toString().trim();
+								String strNew2 = newPassword2.getText()
+										.toString().trim();
+								// 判断输入是否合法
+								// 定义检测包
+								CharacterUtil cu = new CharacterUtil();
+
+								// 检测
+								if (cu.checkPasswordInput(
+										UserInfoActivity.this, strOld) == true
+										&& cu.checkPasswordInput(
+												UserInfoActivity.this, strNew1) == true
+										&& cu.checkPasswordInput(
+												UserInfoActivity.this, strNew2) == true) {
+									// 当全部检测通过的时候才可以进行下面的操作。
+									if (!strOld.equals(Model.MYUSERINFO
+											.getTeacher_password())) {
+										Toast.makeText(UserInfoActivity.this,
+												"原密码输入有误", 1).show();
+										return;
+									}
+									if (!strNew1.equals(strNew2)) {
+										Toast.makeText(UserInfoActivity.this,
+												"两次新密码输入不一致", 1).show();
+										return;
+									}
+									// 正确的处理逻辑
+
+									mProDialog.setTitle("修改中");
+									mProDialog.show();
+									String modifyPsswordUrl = Model.TEAMODIFYPASSWORD
+											+ "teacher_id="
+											+ Model.MYUSERINFO.getTeacher_id()
+											+ "&new=" + strNew2;
+									ThreadPoolUtils.execute(new HttpGetThread(
+											hand1, modifyPsswordUrl));
+								}
+
+							}
+						}).setNegativeButton("取消", null).create();
+
+		mAlertPassword.show();
+
 	}
-	Handler hand1 = new Handler(){
+
+	Handler hand1 = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			if (msg.what == 404) {
 				Toast.makeText(UserInfoActivity.this, "找不到服务器地址", 1).show();
@@ -491,16 +500,17 @@ public class UserInfoActivity extends Activity implements OnClickListener {
 				mProDialog.dismiss();
 			} else if (msg.what == 200) {
 				mProDialog.dismiss();
-				String result = (String)msg.obj;
-				if(result.equals("[1]")){
-					//修改成功！
-					
-					Toast.makeText(UserInfoActivity.this, "密码修改成功，请用新密码登录！", 1).show();
+				String result = (String) msg.obj;
+				if (result.equals("[1]")) {
+					// 修改成功！
+
+					Toast.makeText(UserInfoActivity.this, "密码修改成功，请用新密码登录！", 1)
+							.show();
 					myLogout();
-				}else{
-					//修改失败！
+				} else {
+					// 修改失败！
 					Toast.makeText(UserInfoActivity.this, "密码失败！", 1).show();
-					
+
 				}
 			}
 		};

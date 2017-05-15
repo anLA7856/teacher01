@@ -1,13 +1,16 @@
 package csust.teacher.activity;
 
-
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 
+/**
+ * 
+ * @author anLA7856
+ *
+ */
 public class BaseActivity extends Activity {
 	/** Notification管理 */
 	public NotificationManager mNotificationManager;
@@ -25,30 +28,30 @@ public class BaseActivity extends Activity {
 	private void initService() {
 		mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 	}
-	
-	/** 
-	 * 清除当前创建的通知栏 
+
+	/**
+	 * 清除当前创建的通知栏
 	 */
-	public void clearNotify(int notifyId){
-		mNotificationManager.cancel(notifyId);//删除一个特定的通知ID对应的通知
-//		mNotification.cancel(getResources().getString(R.string.app_name));
+	public void clearNotify(int notifyId) {
+		mNotificationManager.cancel(notifyId);// 删除一个特定的通知ID对应的通知
+		// mNotification.cancel(getResources().getString(R.string.app_name));
 	}
-	
+
 	/**
 	 * 清除所有通知栏
 	 * */
 	public void clearAllNotify() {
 		mNotificationManager.cancelAll();// 删除你发的所有通知
 	}
-	
+
 	/**
 	 * @获取默认的pendingIntent,为了防止2.3及以下版本报错
-	 * @flags属性:  
-	 * 在顶部常驻:Notification.FLAG_ONGOING_EVENT  
-	 * 点击去除： Notification.FLAG_AUTO_CANCEL 
+	 * @flags属性: 在顶部常驻:Notification.FLAG_ONGOING_EVENT 点击去除：
+	 *           Notification.FLAG_AUTO_CANCEL
 	 */
-	public PendingIntent getDefalutIntent(int flags){
-		PendingIntent pendingIntent= PendingIntent.getActivity(this, 1, new Intent(), flags);
+	public PendingIntent getDefalutIntent(int flags) {
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 1,
+				new Intent(), flags);
 		return pendingIntent;
 	}
 }

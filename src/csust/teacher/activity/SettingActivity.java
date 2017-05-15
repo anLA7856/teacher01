@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,26 +19,25 @@ import csust.teacher.model.Model;
 
 /**
  * 设置界面的activity
- * @author U-anLA
+ * 
+ * @author anLA7856
  *
  */
-public class SettingActivity extends Activity implements OnClickListener{
-	
+public class SettingActivity extends Activity implements OnClickListener {
+
 	/**
 	 * 用于定义相应控件。
 	 */
 	private ImageView mClose;
-	private RelativeLayout mRemoveCach,mAdvice,mNewEdition,mAbout;
+	private RelativeLayout mRemoveCach, mAdvice, mNewEdition, mAbout;
 	private CheckBox mNotice;
 	private TextView mCach;
-	
-	//缓存的path
+
+	// 缓存的path
 	private String cahePath = null;
-	//定义进度框。
-    private ProgressDialog mProDialog;
-	
-    
-	
+	// 定义进度框。
+	private ProgressDialog mProDialog;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,15 +45,13 @@ public class SettingActivity extends Activity implements OnClickListener{
 		init();
 	}
 
-
-
 	/**
 	 * 初始化界面。
 	 */
 	private void init() {
-		//初始化缓存目录
+		// 初始化缓存目录
 		cahePath = Model.LOCALSTORAGE;
-		//初始化相应控件。
+		// 初始化相应控件。
 		mClose = (ImageView) findViewById(R.id.setting_back);
 		mRemoveCach = (RelativeLayout) findViewById(R.id.setting_removecahe);
 		mAdvice = (RelativeLayout) findViewById(R.id.setting_yijianfankui);
@@ -63,27 +59,25 @@ public class SettingActivity extends Activity implements OnClickListener{
 		mAbout = (RelativeLayout) findViewById(R.id.setting_guanyuqiubai);
 		mNotice = (CheckBox) findViewById(R.id.setting_tongzhi_checkbox);
 		mCach = (TextView) findViewById(R.id.setting_cahe);
-		
-		//添加事件监听。
+
+		// 添加事件监听。
 		mClose.setOnClickListener(this);
 		mRemoveCach.setOnClickListener(this);
 		mAdvice.setOnClickListener(this);
 		mNewEdition.setOnClickListener(this);
 		mAbout.setOnClickListener(this);
 		mNotice.setOnClickListener(this);
-		
-		//设置cache的大小。
-		mCach.setText(getTotalSizeOfFilesInDir(new File(cahePath))/1000000+"M");
-		
-		//初始化progressdialog
+
+		// 设置cache的大小。
+		mCach.setText(getTotalSizeOfFilesInDir(new File(cahePath)) / 1000000
+				+ "M");
+
+		// 初始化progressdialog
 		mProDialog = new ProgressDialog(this);
 		mProDialog.setCancelable(false);
 		mProDialog.setTitle("请稍后，正在清除缓存");
 
-
 	}
-
-
 
 	@SuppressLint("ShowToast")
 	@Override
@@ -107,69 +101,69 @@ public class SettingActivity extends Activity implements OnClickListener{
 		case R.id.setting_tongzhi_checkbox:
 			Toast.makeText(this, "实时通知功能待加入哈..", 1).show();
 			break;
-				
+
 		default:
 			break;
 		}
 	}
+
 	/**
 	 * 用于删除缓存
 	 */
-	private void deleteCahe(){
-		new AlertDialog.Builder(this).setTitle("删除提示框").setMessage("确认清除缓存(主要是签到时的照片)")
-		.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-			
-			@SuppressLint("ShowToast")
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				mProDialog.show();
-				deleteFile(new File(cahePath));
-				mProDialog.dismiss();
-				mCach.setText(getTotalSizeOfFilesInDir(new File(cahePath))/1000000+"M");
-			}
-		}).setNegativeButton("取消", null).show();
+	private void deleteCahe() {
+		new AlertDialog.Builder(this).setTitle("删除提示框")
+				.setMessage("确认清除缓存(主要是签到时的照片)")
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+					@SuppressLint("ShowToast")
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						mProDialog.show();
+						deleteFile(new File(cahePath));
+						mProDialog.dismiss();
+						mCach.setText(getTotalSizeOfFilesInDir(new File(
+								cahePath)) / 1000000 + "M");
+					}
+				}).setNegativeButton("取消", null).show();
 	}
-	
+
 	/**
 	 * 获得缓存目录文件大小
+	 * 
 	 * @param file
 	 * @return
 	 */
-	private long getTotalSizeOfFilesInDir(final File file){
-		if(file.isFile()){
+	private long getTotalSizeOfFilesInDir(final File file) {
+		if (file.isFile()) {
 			return file.length();
 		}
-		
+
 		final File[] children = file.listFiles();
 		long total = 0;
-		if(children != null){
-			for(final File child : children){
+		if (children != null) {
+			for (final File child : children) {
 				total += getTotalSizeOfFilesInDir(child);
 			}
 		}
 		return total;
 	}
-	
+
 	/**
 	 * 用于删除文件，递归来删除
+	 * 
 	 * @param file
 	 */
-	private void deleteFile(final File file){
-		if(file.isFile()){
+	private void deleteFile(final File file) {
+		if (file.isFile()) {
 			file.delete();
-			return ;
+			return;
 		}
 		final File[] children = file.listFiles();
-		if(children != null){
-			for(final File child : children){
+		if (children != null) {
+			for (final File child : children) {
 				deleteFile(child);
 			}
 		}
 	}
-	
-	
+
 }
-
-
-
-

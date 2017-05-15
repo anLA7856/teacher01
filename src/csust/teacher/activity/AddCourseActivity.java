@@ -1,27 +1,25 @@
 package csust.teacher.activity;
 
-import csust.teacher.model.Model;
-import csust.teacher.net.ThreadPoolUtils;
-import csust.teacher.thread.HttpGetThread;
-import csust.teacher.thread.HttpPostThread;
-import csust.teacher.utils.CharacterUtil;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import csust.teacher.model.Model;
+import csust.teacher.net.ThreadPoolUtils;
+import csust.teacher.thread.HttpPostThread;
+import csust.teacher.utils.CharacterUtil;
 
 /**
  * 添加课程的activity，实现了触摸监听事件
  * 
- * @author U-anLA
+ * @author anLA7856
  *
  */
 public class AddCourseActivity extends Activity implements OnClickListener {

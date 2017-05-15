@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -33,7 +32,7 @@ import csust.teacher.utils.MyJson;
 /**
  * 用于展示课程详细信息
  * 
- * @author U-anLA
+ * @author anLA7856
  *
  */
 public class CourseDetailActivity extends Activity implements OnClickListener {
@@ -125,12 +124,13 @@ public class CourseDetailActivity extends Activity implements OnClickListener {
 
 		// 用于去初始化listview，并显示
 		allStudentListUrl = Model.GETSTUDENTLISTCOURSERATE + "course_id="
-				+ courseInfo.getCourseName()+"&start="+mStart+"&count="+Model.INIT_COUNT;
+				+ courseInfo.getCourseName() + "&start=" + mStart + "&count="
+				+ Model.INIT_COUNT;
 		ThreadPoolUtils.execute(new HttpGetThread(hand3, allStudentListUrl));
 		// 加入到adapter.
 
 		listView.setAdapter(myStudentSignRateAdapter);
-		
+
 	}
 
 	@Override
@@ -228,7 +228,8 @@ public class CourseDetailActivity extends Activity implements OnClickListener {
 						list.removeAll(list);
 					}
 				}
-				List<StudentSignRate> newList = myJson.getOneStudentSignRateOfOneCourse(result);
+				List<StudentSignRate> newList = myJson
+						.getOneStudentSignRateOfOneCourse(result);
 				if (newList.size() != 0) {
 
 					for (StudentSignRate t : newList) {
@@ -237,7 +238,8 @@ public class CourseDetailActivity extends Activity implements OnClickListener {
 					mLinearLayout.setVisibility(View.VISIBLE);
 
 				} else {
-					Toast.makeText(CourseDetailActivity.this, "已经没有了。。", 1).show();
+					Toast.makeText(CourseDetailActivity.this, "已经没有了。。", 1)
+							.show();
 					if (list.size() == 0) {
 						mLinearLayout.setVisibility(View.GONE);
 						HomeNoValue.setText("暂时没有签到记录情况");

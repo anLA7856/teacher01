@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.graphics.AvoidXfermode.Mode;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -36,13 +35,12 @@ import csust.teacher.refresh.PullToRefreshLayout;
 import csust.teacher.refresh.PullToRefreshLayout.MyOnRefreshListener;
 import csust.teacher.refresh.view.PullableListView;
 import csust.teacher.thread.HttpGetThread;
-import csust.teacher.utils.CharacterUtil;
 import csust.teacher.utils.MyJson;
 
 /**
  * 签到状态，也就是当前有多少人签到，一共有多少签到的。
  * 
- * @author U-anLA
+ * @author anLA7856
  *
  */
 public class SignStateActivity extends Activity implements OnClickListener {

@@ -40,15 +40,13 @@ import csust.teacher.utils.HomeWatcher.OnHomePressedListener;
 import csust.teacher.utils.L;
 
 /**
+ * 聊天界面
  * 
- * @desc: 聊天界面主Activity /**
- * @desc:相册图片列表
- * @date: 2015年7月3日 下午4:40:54 QQ2050542273
- * @email:15162925211@163.com
+ * @author anLA7856
+ *
  */
-
-public class ChatActivity extends Activity implements OnClickListener, OnTouchListener, IXListViewListener,
-		OnHomePressedListener {
+public class ChatActivity extends Activity implements OnClickListener,
+		OnTouchListener, IXListViewListener, OnHomePressedListener {
 
 	public static final int NEW_MESSAGE = 0x001;// 收到消息
 	public static int MSGPAGERNUM;
@@ -71,25 +69,21 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 	private MsgListView mMsgListView;// 展示消息的
 	private MessageDB mMsgDB;// 保存消息的数据库
 	private RecentDB mRecentDB;
-	//private Gson mGson;
+	// private Gson mGson;
 	private WindowManager.LayoutParams mParams;
 
 	private HomeWatcher mHomeWatcher;// home键
 
 	// 接受数据
 	private UserDB mUserDB;
-//	private SendMsgAsyncTask mSendTask;
-	
-	//用于接收上个界面传来的teacherid
+	// private SendMsgAsyncTask mSendTask;
+
+	// 用于接收上个界面传来的teacherid
 	private String studentId;
 
-	
-	
 	public static MessageAdapter getAdapter() {
 		return adapter;
 	}
-
-
 
 	public String getStudentId() {
 		return studentId;
@@ -99,8 +93,6 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 		this.studentId = studentId;
 	}
 
-
-
 	/**
 	 * 接收到数据，用来更新listView
 	 */
@@ -108,34 +100,35 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 		// 接收到消息
 		public void handleMessage(android.os.Message msg) {
 			if (msg.what == NEW_MESSAGE) {
-				//需要重写
-//				// String message = (String) msg.obj;
-//				csust.student.info.Message msgItem = (csust.student.info.Message) msg.obj;
-//				String userId = msgItem.getUser_id();
-//				if (!userId.equals(teacherId))// 如果不是当前正在聊天对象的消息，不处理
-//					return;
-//
-//				int headId = msgItem.getHead_id();
-//
-//				ChatMessage item = null;
-//				RecentItem recentItem = new RecentItem();
-//				
-//					item = new MessageItem(MessageItem.MESSAGE_TYPE_TEXT,
-//							msgItem.getNick(), System.currentTimeMillis(),
-//							msgItem.getMessage(), headId, true, 0,
-//							msgItem.getVoiceTime());
-//					recentItem = new RecentItem(MessageItem.MESSAGE_TYPE_TEXT,
-//							userId, headId, msgItem.getNick(),
-//							msgItem.getMessage(), 0,
-//							System.currentTimeMillis(), msgItem.getVoiceTime());
-//
-//				
-//
-//				adapter.upDateMsg(item);// 更新界面
-//				mMsgDB.saveMsg(msgItem.getUser_id(), item);// 保存数据库
-//				mRecentDB.saveRecent(recentItem);
-//
-//				scrollToBottomListItem();
+				// 需要重写
+				// // String message = (String) msg.obj;
+				// csust.student.info.Message msgItem =
+				// (csust.student.info.Message) msg.obj;
+				// String userId = msgItem.getUser_id();
+				// if (!userId.equals(teacherId))// 如果不是当前正在聊天对象的消息，不处理
+				// return;
+				//
+				// int headId = msgItem.getHead_id();
+				//
+				// ChatMessage item = null;
+				// RecentItem recentItem = new RecentItem();
+				//
+				// item = new MessageItem(MessageItem.MESSAGE_TYPE_TEXT,
+				// msgItem.getNick(), System.currentTimeMillis(),
+				// msgItem.getMessage(), headId, true, 0,
+				// msgItem.getVoiceTime());
+				// recentItem = new RecentItem(MessageItem.MESSAGE_TYPE_TEXT,
+				// userId, headId, msgItem.getNick(),
+				// msgItem.getMessage(), 0,
+				// System.currentTimeMillis(), msgItem.getVoiceTime());
+				//
+				//
+				//
+				// adapter.upDateMsg(item);// 更新界面
+				// mMsgDB.saveMsg(msgItem.getUser_id(), item);// 保存数据库
+				// mRecentDB.saveRecent(recentItem);
+				//
+				// scrollToBottomListItem();
 
 			}
 		}
@@ -166,24 +159,22 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 
 		studentId = bundle.getSerializable("teacherId").toString();
 		mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-		//mSpUtil = PushApplication.getInstance().getSpUtil();
+		// mSpUtil = PushApplication.getInstance().getSpUtil();
 
 		MSGPAGERNUM = 0;
-		//进入的时候保存句柄。
+		// 进入的时候保存句柄。
 		Model.MYCHATACTIVITY = this;
 
 		initView();
 
-
-		
 		initUserInfo();
 
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//退出的时候，将句柄清空
+		// 退出的时候，将句柄清空
 		Model.MYCHATACTIVITY = null;
 	}
 
@@ -206,10 +197,10 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 		mBtnSend.setOnClickListener(this);
 
 		// 消息
-//		mApplication = PushApplication.getInstance();
+		// mApplication = PushApplication.getInstance();
 		mMsgDB = mApplication.getMessageDB();// 发送数据库
 		mRecentDB = mApplication.getRecentDB();// 接收消息数据库
-//		mGson = mApplication.getGson();
+		// mGson = mApplication.getGson();
 
 		adapter = new MessageAdapter(this, initMsgData());
 		mMsgListView = (MsgListView) findViewById(R.id.msg_listView);
@@ -276,7 +267,7 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 		mHomeWatcher = new HomeWatcher(this);
 		mHomeWatcher.setOnHomePressedListener(this);
 		mHomeWatcher.startWatch();
-		//PushMessageReceiver.ehList.add(this);// 监听推送的消息
+		// PushMessageReceiver.ehList.add(this);// 监听推送的消息
 
 	}
 
@@ -288,7 +279,7 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 		super.onPause();
 		mHomeWatcher.setOnHomePressedListener(null);
 		mHomeWatcher.stopWatch();
-		//PushMessageReceiver.ehList.remove(this);// 移除监听
+		// PushMessageReceiver.ehList.remove(this);// 移除监听
 	}
 
 	public static MessageAdapter getMessageAdapter() {
@@ -299,8 +290,8 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 	 * 加载消息历史，从数据库中读出
 	 */
 	private List<ChatMessage> initMsgData() {
-		List<ChatMessage> list = mMsgDB
-				.getMsg(Model.MYUSERINFO.getTeacher_id()+"",studentId, MSGPAGERNUM);
+		List<ChatMessage> list = mMsgDB.getMsg(Model.MYUSERINFO.getTeacher_id()
+				+ "", studentId, MSGPAGERNUM);
 		List<ChatMessage> msgList = new ArrayList<ChatMessage>();// 消息对象数组
 		if (list.size() > 0) {
 			for (ChatMessage entity : list) {
@@ -308,7 +299,7 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 					entity.setName(defaulgUserName);
 				}
 				if (entity.getHeadPic().equals("")) {
-					entity.setHeadPic(defaultCount+"");
+					entity.setHeadPic(defaultCount + "");
 				}
 				msgList.add(entity);
 			}
@@ -324,27 +315,27 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 		case R.id.send_btn: {
 			// 发送消息
 			String msg = mEtMsg.getText().toString();
-			ChatMessage item = new ChatMessage(0, Model.MYUSERINFO.getTeacher_id(), Integer.parseInt(studentId), msg,
-					System.currentTimeMillis()+"", 1, 2+"", Model.MYUSERINFO.getTeacher_name(), "");
-			
-			
+			ChatMessage item = new ChatMessage(0,
+					Model.MYUSERINFO.getTeacher_id(),
+					Integer.parseInt(studentId), msg,
+					System.currentTimeMillis() + "", 1, 2 + "",
+					Model.MYUSERINFO.getTeacher_name(), "");
+
 			adapter.upDateMsg(item);
 			mMsgListView.setSelection(adapter.getCount() - 1);
-			mMsgDB.saveMsg(Model.MYUSERINFO.getTeacher_id()+"", item);// 消息保存数据库
+			mMsgDB.saveMsg(Model.MYUSERINFO.getTeacher_id() + "", item);// 消息保存数据库
 			mEtMsg.setText("");
 
-			//发送信息。通过线程池。
-			
-			String url = Model.TEACHATMESSAGEADD + "teacherId=" + Model.MYUSERINFO.getTeacher_id()+"&studentId="+studentId+"&message="+msg;
-			
+			// 发送信息。通过线程池。
+
+			String url = Model.TEACHATMESSAGEADD + "teacherId="
+					+ Model.MYUSERINFO.getTeacher_id() + "&studentId="
+					+ studentId + "&message=" + msg;
+
 			ThreadPoolUtils.execute(new HttpGetThread(hand2, url));
-			
-			
-			
-			RecentItem recentItem = new RecentItem(
-					1, studentId,
-					defaultCount, defaulgUserName, msg, 0,
-					System.currentTimeMillis(), 0);
+
+			RecentItem recentItem = new RecentItem(1, studentId, defaultCount,
+					defaulgUserName, msg, 0, System.currentTimeMillis(), 0);
 			mRecentDB.saveRecent(recentItem);
 			break;
 		}
@@ -380,8 +371,6 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 			}
 		};
 	}
-
-
 
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
@@ -430,8 +419,8 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 	public void onHomeLongPressed() {
 
 	}
-	
-	Handler hand2 = new Handler(){
+
+	Handler hand2 = new Handler() {
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			if (msg.what == 404) {
@@ -441,15 +430,15 @@ public class ChatActivity extends Activity implements OnClickListener, OnTouchLi
 			} else if (msg.what == 200) {
 				// 正常的处理逻辑。
 				String result = (String) msg.obj;
-				if(result.equals("1")){
-					//发送成功界面
+				if (result.equals("1")) {
+					// 发送成功界面
 					Toast.makeText(ChatActivity.this, "发送成功", 1).show();
-				}else{
-					//发送失败的逻辑
-					
+				} else {
+					// 发送失败的逻辑
+
 					Toast.makeText(ChatActivity.this, "发送失败", 1).show();
 				}
-				
+
 			}
 		};
 	};

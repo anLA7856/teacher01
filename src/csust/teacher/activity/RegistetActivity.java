@@ -36,7 +36,7 @@ import csust.teacher.utils.WifiAdmin;
 /**
  * 注册页面，教师端的注册
  * 
- * @author U-anLA
+ * @author anLA7856
  *
  */
 public class RegistetActivity extends Activity implements OnClickListener {
@@ -55,7 +55,8 @@ public class RegistetActivity extends Activity implements OnClickListener {
 	// 自己的头像的图片
 	private ImageView mPic;
 	// 用string来保存相应的信息。
-	private String username, password, url, value, name, sex="", age="", stuNum="";
+	private String username, password, url, value, name, sex = "", age = "",
+			stuNum = "";
 	// 登录时保存图片地址的file
 	private File mPictureFile = null;
 
@@ -70,14 +71,14 @@ public class RegistetActivity extends Activity implements OnClickListener {
 
 	// 图片路径。
 	private String imgUrl = null;
-	
-	//用于获得和存储wifimac地址
+
+	// 用于获得和存储wifimac地址
 	private String wifiMac = null;
-	
-	//控制并且获得本机wifimac的费用
+
+	// 控制并且获得本机wifimac的费用
 	private WifiAdmin myAdmin;
-	
-	//用来标记是否拍照了
+
+	// 用来标记是否拍照了
 	private boolean isPhoto = false;
 
 	@Override
@@ -112,8 +113,8 @@ public class RegistetActivity extends Activity implements OnClickListener {
 		mProDialog = new ProgressDialog(this);
 		mProDialog.setCancelable(true);
 		mProDialog.setTitle("注册账号中...");
-		
-		//获得本机的wifimac地址。
+
+		// 获得本机的wifimac地址。
 		wifiMac = myAdmin.getMac();
 
 		/**
@@ -196,20 +197,24 @@ public class RegistetActivity extends Activity implements OnClickListener {
 						.show();
 				return;
 			}
-			
-			if(isPhoto == false){
-				//判断是否有上传自己的头像。
-				new AlertDialog.Builder(this).setTitle("提示框").setMessage("确认不上传自己的头像？")
-				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-					
-					@SuppressLint("ShowToast")
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						//
-						myRegister();
-					}
-				}).setNegativeButton("取消", null).show();
-			}else{
+
+			if (isPhoto == false) {
+				// 判断是否有上传自己的头像。
+				new AlertDialog.Builder(this)
+						.setTitle("提示框")
+						.setMessage("确认不上传自己的头像？")
+						.setPositiveButton("确定",
+								new DialogInterface.OnClickListener() {
+
+									@SuppressLint("ShowToast")
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										//
+										myRegister();
+									}
+								}).setNegativeButton("取消", null).show();
+			} else {
 				myRegister();
 
 			}
@@ -226,8 +231,10 @@ public class RegistetActivity extends Activity implements OnClickListener {
 		mProDialog.setMessage("注册账号中...");
 		mProDialog.show();
 		url = Model.REGISTET;
-		value = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\",\"wifiMac\":\"" + wifiMac + "\",\"name\":\"" + name + "\",\"sex\":\"" + sex
-				+ "\",\"age\":\"" + age + "\",\"stuNum\":\"" + stuNum + "\"}";
+		value = "{\"username\":\"" + username + "\",\"password\":\"" + password
+				+ "\",\"wifiMac\":\"" + wifiMac + "\",\"name\":\"" + name
+				+ "\",\"sex\":\"" + sex + "\",\"age\":\"" + age
+				+ "\",\"stuNum\":\"" + stuNum + "\"}";
 		ThreadPoolUtils.execute(new HttpPostThread(hand, url, value, username
 				+ ".jpg", imgUrl));
 	}
@@ -238,7 +245,7 @@ public class RegistetActivity extends Activity implements OnClickListener {
 	Handler hand = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			super.handleMessage(msg);
-			//进度匡消失
+			// 进度匡消失
 			mProDialog.dismiss();
 			if (msg.what == 404) {
 				Toast.makeText(RegistetActivity.this, "请求失败，服务器故障", 1).show();
@@ -270,8 +277,8 @@ public class RegistetActivity extends Activity implements OnClickListener {
 				}
 
 			}
-			
-			//mProDialog.dismiss();
+
+			// mProDialog.dismiss();
 		};
 	};
 

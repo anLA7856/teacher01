@@ -18,9 +18,15 @@ import csust.teacher.info.StudentInfo;
 import csust.teacher.info.StudentSignRate;
 import csust.teacher.info.UserInfo;
 
+/**
+ * 
+ * @author anLA7856
+ *
+ */
 public class MyJson {
 	/**
 	 * 用于解析用户信息，也就是登录成功之后登录信息
+	 * 
 	 * @param result
 	 * @return
 	 */
@@ -40,12 +46,14 @@ public class MyJson {
 				list.add(info);
 			}
 		} catch (JSONException e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 		return list;
 	}
+
 	/**
 	 * 用于把课程信息的json格式转化过来。
+	 * 
 	 * @param result
 	 * @return
 	 */
@@ -68,12 +76,10 @@ public class MyJson {
 		}
 		return list;
 	}
-	
-	
-	
-	
+
 	/**
 	 * 用于把正在签到的信息列出来
+	 * 
 	 * @param result
 	 * @return
 	 */
@@ -97,13 +103,14 @@ public class MyJson {
 		}
 		return list;
 	}
-	
+
 	/**
 	 * 获得实时签到记录
+	 * 
 	 * @param result
 	 * @return
 	 */
-	public List<SignNameInfo> getRealSignNameInfoList(String result){
+	public List<SignNameInfo> getRealSignNameInfoList(String result) {
 		List<SignNameInfo> list = null;
 		try {
 			JSONArray jay = new JSONArray(result);
@@ -111,7 +118,7 @@ public class MyJson {
 			for (int i = 0; i < jay.length(); i++) {
 				JSONObject job = jay.getJSONObject(i);
 				SignNameInfo info = new SignNameInfo();
-				//暂时只用了这两个字段
+				// 暂时只用了这两个字段
 				info.setSign_time(job.getString("sign_time"));
 				info.setStudentName(job.getString("studentName"));
 				info.setSign_state(job.getString("sign_state"));
@@ -123,14 +130,14 @@ public class MyJson {
 		}
 		return list;
 	}
-	
 
 	/**
 	 * 解析某一次课程的签到率
+	 * 
 	 * @param result
 	 * @return
 	 */
-	public List<Score> getSignNameRateCountList(String result){
+	public List<Score> getSignNameRateCountList(String result) {
 		List<Score> list = null;
 		try {
 			JSONArray jay = new JSONArray(result);
@@ -138,8 +145,8 @@ public class MyJson {
 			for (int i = 0; i < jay.length(); i++) {
 				JSONObject job = jay.getJSONObject(i);
 				Score info = new Score();
-				//暂时只用了这两个字段
-				
+				// 暂时只用了这两个字段
+
 				info.setAllow_sign_id(job.getString("allow_sign_id"));
 				info.setScore(job.getInt("score"));
 				list.add(info);
@@ -149,14 +156,14 @@ public class MyJson {
 		}
 		return list;
 	}
-	
-	
+
 	/**
 	 * 解析某一次课程的签到率，主要是解析某一门课程的所有不同学生的签到率
+	 * 
 	 * @param result
 	 * @return
 	 */
-	public List<StudentSignRate> getOneStudentSignRateOfOneCourse(String result){
+	public List<StudentSignRate> getOneStudentSignRateOfOneCourse(String result) {
 		List<StudentSignRate> list = null;
 		try {
 			JSONArray jay = new JSONArray(result);
@@ -164,8 +171,8 @@ public class MyJson {
 			for (int i = 0; i < jay.length(); i++) {
 				JSONObject job = jay.getJSONObject(i);
 				StudentSignRate info = new StudentSignRate();
-				//暂时只用了这两个字段
-				
+				// 暂时只用了这两个字段
+
 				info.setAllSignCount(job.getInt("allSignCount"));
 				info.setCourse_id(job.getString("course_id"));
 				info.setHave_sign(job.getInt("have_sign"));
@@ -173,7 +180,7 @@ public class MyJson {
 				info.setStudent_id(job.getString("student_id"));
 				info.setStudent_name(job.getString("student_name"));
 				info.setStudent_username(job.getString("student_username"));
-				
+
 				list.add(info);
 			}
 		} catch (JSONException e) {
@@ -181,14 +188,14 @@ public class MyJson {
 		}
 		return list;
 	}
-	
-	
+
 	/**
 	 * 解析字符串，主要用于获得某一次签到未签到的学生信息。
+	 * 
 	 * @param result
-	 * @return   
+	 * @return
 	 */
-	public List<StudentInfo> getUnsignedStudentsInfo(String result){
+	public List<StudentInfo> getUnsignedStudentsInfo(String result) {
 		List<StudentInfo> list = null;
 		try {
 			JSONArray jay = new JSONArray(result);
@@ -196,13 +203,12 @@ public class MyJson {
 			for (int i = 0; i < jay.length(); i++) {
 				JSONObject job = jay.getJSONObject(i);
 				StudentInfo info = new StudentInfo();
-				//暂时只用了这两个字段
-				
+				// 暂时只用了这两个字段
+
 				info.setStudent_id(job.getInt("student_id"));
 				info.setStudent_name(job.getString("student_name"));
 				info.setStudent_username(job.getString("student_username"));
-				
-			
+
 				list.add(info);
 			}
 		} catch (JSONException e) {
@@ -210,13 +216,14 @@ public class MyJson {
 		}
 		return list;
 	}
-	
+
 	/**
 	 * 解析字符串，主要用于获取课程学生列表界面的所有信息
+	 * 
 	 * @param result
-	 * @return   
+	 * @return
 	 */
-	public List<CourseStudentListInfo> getCourseStudentListInfo(String result){
+	public List<CourseStudentListInfo> getCourseStudentListInfo(String result) {
 		List<CourseStudentListInfo> list = null;
 		try {
 			JSONArray jay = new JSONArray(result);
@@ -226,26 +233,32 @@ public class MyJson {
 				JSONObject job = jay.getJSONObject(i);
 				JSONObject course = job.getJSONObject("course");
 				JSONArray myList = job.getJSONArray("list");
-				
+
 				Course c = new Course();
 				c.setCourse_id(course.getInt("course_id"));
 				c.setCourse_name(course.getString("course_name"));
 				c.setTeacher_username(course.getString("teacher_username"));
 				List<StudentInfo> tempList = new ArrayList<StudentInfo>();
-				for(int j = 0;j < myList.length();j++){
+				for (int j = 0; j < myList.length(); j++) {
 					JSONObject tempStudent = myList.getJSONObject(j);
 					StudentInfo tempStudentInfo = new StudentInfo();
-					tempStudentInfo.setStudent_id(tempStudent.getInt("student_id"));
-					tempStudentInfo.setStudent_name(tempStudent.getString("student_name"));
-					tempStudentInfo.setStudent_num(tempStudent.getString("student_num"));
-					tempStudentInfo.setStudent_password(tempStudent.getString("student_password"));
-					tempStudentInfo.setStudent_sex(tempStudent.getString("student_sex"));
-					tempStudentInfo.setStudent_username(tempStudent.getString("student_username"));
+					tempStudentInfo.setStudent_id(tempStudent
+							.getInt("student_id"));
+					tempStudentInfo.setStudent_name(tempStudent
+							.getString("student_name"));
+					tempStudentInfo.setStudent_num(tempStudent
+							.getString("student_num"));
+					tempStudentInfo.setStudent_password(tempStudent
+							.getString("student_password"));
+					tempStudentInfo.setStudent_sex(tempStudent
+							.getString("student_sex"));
+					tempStudentInfo.setStudent_username(tempStudent
+							.getString("student_username"));
 					tempList.add(tempStudentInfo);
 				}
 				csl.setCourse(c);
 				csl.setList(tempList);
-			
+
 				list.add(csl);
 			}
 		} catch (JSONException e) {
@@ -253,8 +266,8 @@ public class MyJson {
 		}
 		return list;
 	}
-	
-	public List<ChatMessage> getChatMessageList(String result){
+
+	public List<ChatMessage> getChatMessageList(String result) {
 		List<ChatMessage> list = null;
 		try {
 			JSONArray jay = new JSONArray(result);
@@ -262,7 +275,7 @@ public class MyJson {
 			for (int i = 0; i < jay.length(); i++) {
 				JSONObject job = jay.getJSONObject(i);
 				ChatMessage info = new ChatMessage();
-		
+
 				info.setId(job.getInt("id"));
 				info.setHeadPic(job.getString("headPic"));
 				info.setChatTime(job.getString("chatTime"));
@@ -272,7 +285,7 @@ public class MyJson {
 				info.setNotRead(job.getInt("notRead"));
 				info.setReceiveId(job.getInt("receiveId"));
 				info.setSenderId(job.getInt("senderId"));
-			
+
 				list.add(info);
 			}
 		} catch (JSONException e) {
@@ -280,16 +293,5 @@ public class MyJson {
 		}
 		return list;
 	}
-	
+
 }
-
-
-
-
-
-
-
-
-
-
-

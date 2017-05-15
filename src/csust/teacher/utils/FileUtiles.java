@@ -18,52 +18,57 @@ import android.os.Environment;
  * */
 public class FileUtiles {
 	private Context ctx;
-	
-	public FileUtiles(Context ctx){
+
+	public FileUtiles(Context ctx) {
 		this.ctx = ctx;
 	}
+
 	/**
 	 * 用来获取手机在sdcard保存的地址
+	 * 
 	 * @return
 	 */
-	public String getAbsolutePath(){
+	public String getAbsolutePath() {
 		File root = ctx.getExternalFilesDir(null);
 		// 返回手机端的绝对路径，当我们软件卸载，以及清理缓存时会被清理掉
-		if(root != null){
+		if (root != null) {
 			return root.getAbsolutePath();
 		}
-		return null;	
+		return null;
 	}
+
 	/**
 	 * 判断图片在本地缓存中是否存在，如果存在返回一个true
+	 * 
 	 * @param name
 	 * @return
 	 */
-	public boolean isBitmap(String name){
+	public boolean isBitmap(String name) {
 		File root = ctx.getExternalFilesDir(null);
 		// file地址拼接
 		File file = new File(root, name);
 		return file.exists();
 	}
-	
+
 	/**
 	 * 将图片添加到本地缓存中
+	 * 
 	 * @param name
 	 * @param bitmap
 	 */
-	public void saveBitmap(String name,Bitmap bitmap){
-		if(bitmap == null){
-			return ;
+	public void saveBitmap(String name, Bitmap bitmap) {
+		if (bitmap == null) {
+			return;
 		}
-		//如果sdcard不能用
+		// 如果sdcard不能用
 		if (!Environment.getExternalStorageState().equals(
 				Environment.MEDIA_UNMOUNTED)) {
 			return;
 		}
-		//拼接图片要保存到sd卡的地址
+		// 拼接图片要保存到sd卡的地址
 		String BitPath = getAbsolutePath() + "/" + name;
 		// mtn/sdcard/android/com.anjoyo.zhangxinyi/files/
-		
+
 		try {
 			FileOutputStream fos = new FileOutputStream(BitPath);
 			/**
@@ -80,8 +85,5 @@ public class FileUtiles {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
-	
+
 }

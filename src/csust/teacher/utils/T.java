@@ -4,11 +4,9 @@ import android.content.Context;
 import android.widget.Toast;
 
 /**
- * @desc:Toast统一管理类
- *BLOG:http://blog.sina.com.cn/cuil11
- * @date: 2015年7月3日 下午4:40:54
- * QQ2050542273
- * @email:15162925211@163.com
+ * 
+ * @author anLA7856
+ *
  */
 public class T {
 	// Toast

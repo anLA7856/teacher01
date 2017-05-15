@@ -2,13 +2,6 @@ package csust.teacher.adapter;
 
 import java.util.List;
 
-import csust.teacher.activity.R;
-import csust.teacher.adapter.MyListAdapter.Holder;
-import csust.teacher.info.CourseInfo;
-import csust.teacher.info.StudentSignRate;
-import csust.teacher.model.Model;
-import csust.teacher.utils.LoadImg;
-import csust.teacher.utils.LoadImg.ImageDownloadCallBack;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -20,11 +13,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import csust.teacher.activity.R;
+import csust.teacher.info.StudentSignRate;
+import csust.teacher.model.Model;
+import csust.teacher.utils.LoadImg;
+import csust.teacher.utils.LoadImg.ImageDownloadCallBack;
 
 /**
  * 用于展示在每一门课的签到结果中，的每个学生的listview
  * 
- * @author U-anLA
+ * @author anLA7856
  *
  */
 public class MyStudentSignRateAdapter extends BaseAdapter {
@@ -34,11 +32,11 @@ public class MyStudentSignRateAdapter extends BaseAdapter {
 	private LoadImg loadImgHeadImg;
 	private boolean upFlag = false;
 	private boolean downFlag = false;
-	
-	//保存listviewItem的长度.
+
+	// 保存listviewItem的长度.
 	private int myLength;
-	
-	//用于存储页面传来的引用。
+
+	// 用于存储页面传来的引用。
 	private LinearLayout mLinearLayout;
 
 	public int getMyLength() {
@@ -49,7 +47,8 @@ public class MyStudentSignRateAdapter extends BaseAdapter {
 		this.myLength = myLength;
 	}
 
-	public MyStudentSignRateAdapter(Context ctx, List<StudentSignRate> list,LinearLayout mLinearLayout) {
+	public MyStudentSignRateAdapter(Context ctx, List<StudentSignRate> list,
+			LinearLayout mLinearLayout) {
 		this.list = list;
 		this.ctx = ctx;
 		// 加载图像
@@ -78,7 +77,7 @@ public class MyStudentSignRateAdapter extends BaseAdapter {
 
 		if (convertView == null) {
 			hold = new Holder();
-			
+
 			convertView = View.inflate(ctx,
 					R.layout.mylistview_item_student_sign_rate, null);
 			hold.studentPic = (ImageView) convertView
@@ -91,16 +90,15 @@ public class MyStudentSignRateAdapter extends BaseAdapter {
 					.findViewById(R.id.signRateList_signRate);
 			hold.studentName = (TextView) convertView
 					.findViewById(R.id.signRateList_studentName);
-			//下面这种方法获得view的高度。
-			convertView.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),  
-	                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));  
-			myLength = convertView.getMeasuredHeight();  
-			//通过前一个引用传来的linearlayout来改变
-			LinearLayout.LayoutParams  hint_page_params = new LinearLayout.LayoutParams(
-					LinearLayout.LayoutParams.MATCH_PARENT,
-					getMyLength()*list.size());
-			
-			
+			// 下面这种方法获得view的高度。
+			convertView.measure(
+					MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+					MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+			myLength = convertView.getMeasuredHeight();
+			// 通过前一个引用传来的linearlayout来改变
+			LinearLayout.LayoutParams hint_page_params = new LinearLayout.LayoutParams(
+					LinearLayout.LayoutParams.MATCH_PARENT, getMyLength()
+							* list.size());
 
 			mLinearLayout.setLayoutParams(hint_page_params);
 
@@ -109,12 +107,11 @@ public class MyStudentSignRateAdapter extends BaseAdapter {
 			hold = (Holder) convertView.getTag();
 		}
 
-		
-		Log.i("myLength", myLength+"");
-		hold.allSignCount.setText(list.get(position).getAllSignCount()+"");
-		hold.haveSign.setText(list.get(position).getHave_sign()+"");
+		Log.i("myLength", myLength + "");
+		hold.allSignCount.setText(list.get(position).getAllSignCount() + "");
+		hold.haveSign.setText(list.get(position).getHave_sign() + "");
 		hold.signRate.setText(list.get(position).getRate() + "%");
-		hold.studentName.setText(list.get(position).getStudent_name()+"");
+		hold.studentName.setText(list.get(position).getStudent_name() + "");
 
 		// 设置监听
 		hold.studentPic.setOnClickListener(new View.OnClickListener() {

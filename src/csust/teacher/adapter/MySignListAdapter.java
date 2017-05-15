@@ -2,22 +2,19 @@ package csust.teacher.adapter;
 
 import java.util.List;
 
-import csust.teacher.activity.R;
-import csust.teacher.info.SignInfo;
-import csust.teacher.model.Model;
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+import csust.teacher.activity.R;
+import csust.teacher.info.SignInfo;
 
 /**
  * 签到记录的适配器
- * @author U-anLA
+ * 
+ * @author anLA7856
  *
  */
 public class MySignListAdapter extends BaseAdapter {

@@ -2,22 +2,19 @@ package csust.teacher.adapter;
 
 import java.util.List;
 
-import csust.teacher.activity.R;
-import csust.teacher.adapter.MySignListAdapter.SignHolder;
-import csust.teacher.info.SignNameInfo;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import csust.teacher.activity.R;
+import csust.teacher.info.SignNameInfo;
 
 /**
  * 用于展示签到结果列表的list列表
  * 
- * @author U-anLA
+ * @author anLA7856
  *
  */
 public class MySignInfoListAdapter extends BaseAdapter {
@@ -63,8 +60,9 @@ public class MySignInfoListAdapter extends BaseAdapter {
 
 			hold.studentName = (TextView) convertView
 					.findViewById(R.id.havasign_studentName);
-			
-			hold.signState = (TextView) convertView.findViewById(R.id.havasign_state);
+
+			hold.signState = (TextView) convertView
+					.findViewById(R.id.havasign_state);
 
 			convertView.setTag(hold);
 		} else {
@@ -75,11 +73,10 @@ public class MySignInfoListAdapter extends BaseAdapter {
 		hold.signDate.setText(list.get(position).getSign_time());
 		// 设置姓名
 		hold.studentName.setText(list.get(position).getStudentName());
-		//设置签到状态
+		// 设置签到状态
 		hold.signState.setText(list.get(position).getSign_state());
-		
+
 		// 设置图片，这里暂时没有设置
-		
 
 		return convertView;
 	}
